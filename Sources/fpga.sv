@@ -86,10 +86,10 @@ module crossbar_line #(V) (
   generate
     for(x = 0; x < V; x++)begin
       H_crossbar HCB (.clk(clk), .nres(nres), .prog_i(prog[2*x]), .prog_shft(prog_shft), .prog_o(prog[2*x+1]),
-        .N_i(N_i[V*62+61:V*62+32]), .S_o(S_o[V*62+61:V*62+32]), .S_i(S_i[V*34+33:V*34+16]), .N_o(N_o[V*34+33:V*34+16]),
+        .N_i(N_i[x*62+61:x*62+32]), .S_o(S_o[x*62+61:x*62+32]), .S_i(S_i[x*34+33:x*34+16]), .N_o(N_o[x*34+33:x*34+16]),
         .W_i(wires_W[2*x]), .E_o(wires_W[2*x+1]), .E_i(wires_E[2*x+1]), .W_o(wires_E[2*x]));
       crossbar CB (.clk(clk), .nres(nres), .prog_i(prog[2*x+1]), .prog_shft(prog_shft), .prog_o(prog[2*x+2]),
-        .N_i(N_i[V*63+31:V*63+0]), .S_o(S_o[V*63+31:V*63+0]), .S_i(S_i[V*35+15:V*35+0]), .N_o(N_o[V*35+15:V*35+0]),
+        .N_i(N_i[x*63+31:x*63+0]), .S_o(S_o[x*63+31:x*63+0]), .S_i(S_i[x*35+15:x*35+0]), .N_o(N_o[x*35+15:x*35+0]),
         .W_i(wires_W[2*x+1]), .E_o(wires_W[2*x+2]), .E_i(wires_E[2*x+2]), .W_o(wires_E[2*x+1]));
     end
   endgenerate
@@ -130,10 +130,10 @@ module logic_line #(V) (
   generate
     for(x = 0; x < V; x++)begin
       logic_slice LS (.clk(clk), .nres(nres), .prog_i(prog[2*x]), .prog_shft(prog_shft), .prog_o(prog[2*x+1]),
-        .N_i(N_i[V*62+61:V*62+32]), .S_o(S_o[V*62+61:V*62+32]), .S_i(S_i[V*34+33:V*34+16]), .N_o(N_o[V*34+33:V*34+16]),
+        .N_i(N_i[x*62+61:x*62+32]), .S_o(S_o[x*62+61:x*62+32]), .S_i(S_i[x*34+33:x*34+16]), .N_o(N_o[x*34+33:x*34+16]),
         .W_i(wires_LI[x]), .E_o(wires_LO[x]));
       V_crossbar VCB (.clk(clk), .nres(nres), .prog_i(prog[2*x+1]), .prog_shft(prog_shft), .prog_o(prog[2*x+2]),
-        .N_i(N_i[V*63+31:V*63+0]), .S_o(S_o[V*63+31:V*63+0]), .S_i(S_i[V*35+15:V*35+0]), .N_o(N_o[V*35+15:V*35+0]),
+        .N_i(N_i[x*63+31:x*63+0]), .S_o(S_o[x*63+31:x*63+0]), .S_i(S_i[x*35+15:x*35+0]), .N_o(N_o[x*35+15:x*35+0]),
         .W_i(wires_LO[x]), .E_o(wires_LI[x+1]));
     end
   endgenerate

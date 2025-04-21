@@ -60,16 +60,16 @@ module crossbar (
   genvar x;
   generate
     for(x = 0; x < 16; x++)begin
-      assign X_prog_NW[x][32*x+31:32*x] = (prog_shft == 0) ? prog[3+x] : 'Z;
+      assign X_prog_NW[32*x+31:32*x] = (prog_shft == 0) ? prog[3+x] : 'Z;
     end
     for(x = 0; x < 32; x++)begin
-      assign X_prog_NE[x][32*x+31:32*x] = (prog_shft == 0) ? prog[19+x] : 'Z;
+      assign X_prog_NE[32*x+31:32*x] = (prog_shft == 0) ? prog[19+x] : 'Z;
     end
     for(x = 0; x < 8; x++)begin
-      assign X_prog_SW[x][32*x+31:32*x] = (prog_shft == 0) ? prog[51+x] : 'Z;
+      assign X_prog_SW[32*x+31:32*x] = (prog_shft == 0) ? prog[51+x] : 'Z;
     end
     for(x = 0; x < 16; x++)begin
-      assign X_prog_SE[x][32*x+31:32*x] = (prog_shft == 0) ? prog[59+x] : 'Z;
+      assign X_prog_SE[32*x+31:32*x] = (prog_shft == 0) ? prog[59+x] : 'Z;
     end
   endgenerate
   
@@ -302,8 +302,16 @@ module H_crossbar (
       Xnodes #(.V(6), .H(32)) X_No (.prog(X_prog_Wu[x]), .V_i(XNo[x]), .V_o(No[x]), .H_i(Wires_E[2*x+2]), .H_o(Wires_E[2*x+1]));
       Ynodes #(.V(10)) Y_S (.prog(Y_prog[x][9:0]), .V_i(XNi[x]), .V_o(XSo[x]));
       Ynodes #(.V(6)) Y_N (.prog(Y_prog[x][15:10]), .V_i(XSi[x]), .V_o(XNo[x]));
-      Xnodes #(.V(10), .H(16)) X_So (.prog(X_prog_Ed[x]), .V_i(XSo[x]), .V_o(So[X]), .H_i(Wires_W[2*x]), .H_o(Wires_W[2*x+1]));
-      Xnodes #(.V(6), .H(16)) X_Si (.prog(X_prog_Eu[x]), .V_i(Si[x]), .V_o(XSi[x]), .H_i(Wires_W[2*x+1]), .H_o(Wires_W[2*x+2]));
+      Xnodes #(.V(10), .H(16)) X_So (.prog(X_prog_Ed[x]), 
+      .V_i(XSo[x]), 
+      .V_o(), //.V_o(So[X]), 
+      .H_i(Wires_W[2*x]), 
+      .H_o(Wires_W[2*x+1]));
+      Xnodes #(.V(6), .H(16)) X_Si (.prog(X_prog_Eu[x]), 
+      .V_i(Si[x]), 
+      .V_o(XSi[x]), 
+      .H_i(Wires_W[2*x+1]), 
+      .H_o(Wires_W[2*x+2]));
     end
   endgenerate
   

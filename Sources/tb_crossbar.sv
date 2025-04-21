@@ -7,14 +7,14 @@ module testbench;
   reg  [31:0] prog_i=32'h00000000;
   reg 		  prog_shft=0;
   wire [31:0] prog_o;
-  reg  [31:0] N_i=32'h87654321,
-  wire [31:0] S_o,
-  reg  [15:0] S_i=16'ha5a5,
-  wire [15:0] N_o,
-  reg  [31:0] W_i=32'h0fedcba9,
-  wire [31:0] E_o,
-  reg  [15:0] E_i=16'h5a5a,
-  wire [15:0] W_o
+  reg  [31:0] N_i=32'h87654321;
+  wire [31:0] S_o;
+  reg  [15:0] S_i=16'ha5a5;
+  wire [15:0] N_o;
+  reg  [31:0] W_i=32'h0fedcba9;
+  wire [31:0] E_o;
+  reg  [15:0] E_i=16'h5a5a;
+  wire [15:0] W_o;
   
   // Instantiate Unit Under Test
   crossbar UUT(
