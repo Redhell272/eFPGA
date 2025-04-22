@@ -8,16 +8,26 @@ module testbench;
   reg 		  prog_shft=0;
   wire [31:0] prog_o;
   reg  [31:0] N_i=32'h87654321;
+  reg  [29:0] N_i_H=30'h87654321;
   wire [31:0] S_o;
+  wire [31:0] S_o_V;
+  wire [29:0] S_o_H;
   reg  [15:0] S_i=16'ha5a5;
+  reg  [17:0] S_i_H=18'h5a5a5;
   wire [15:0] N_o;
+  wire [15:0] N_o_V;
+  wire [17:0] N_o_H;
   reg  [31:0] W_i=32'h0fedcba9;
+  reg   [7:0] W_i_L=8'ha5;
   wire [31:0] E_o;
+  wire [31:0] E_o_H;
+  wire [31:0] E_o_L;
   reg  [15:0] E_i=16'h5a5a;
   wire [15:0] W_o;
+  wire [15:0] W_o_H;
   
-  // Instantiate Unit Under Test
-  crossbar UUT(
+  // Instantiate Units Under Test
+  crossbar CBUT(
     .clk(clk),
     .nres(nres),
     .prog_i(prog_i),
@@ -26,11 +36,41 @@ module testbench;
     .N_i(N_i),
     .S_o(S_o),
     .S_i(S_i),
-    .N_o(N_i),
+    .N_o(N_o),
     .W_i(W_i),
     .E_o(E_o),
     .E_i(E_i),
     .W_o(W_o)
+  );
+
+  V_crossbar CBVUT(
+    .clk(clk),
+    .nres(nres),
+    .prog_i(prog_i),
+    .prog_shft(prog_shft),
+    .prog_o(prog_o),
+    .N_i(N_i),
+    .S_o(S_o_V),
+    .S_i(S_i),
+    .N_o(N_o_V),
+    .W_i(W_i_L),
+    .E_o(E_o_L)
+  );
+
+  H_crossbar CBHUT(
+    .clk(clk),
+    .nres(nres),
+    .prog_i(prog_i),
+    .prog_shft(prog_shft),
+    .prog_o(prog_o),
+    .N_i(N_i_H),
+    .S_o(S_o_H),
+    .S_i(S_i_H),
+    .N_o(N_o_H),
+    .W_i(W_i),
+    .E_o(E_o_H),
+    .E_i(E_i),
+    .W_o(W_o_H)
   );
   
   

@@ -90,10 +90,10 @@ module crossbar (
   Ynodes #(.V(32)) Y_S0 (.prog(Y_prog_S), .V_i(Y_S[0]), .V_o(Y_S[1]));
   Ynodes #(.V(32)) Y_E0 (.prog(Y_prog_E), .V_i(Y_E[0]), .V_o(Y_E[1]));
 
-  Xnodes #(.V(16), .H(32)) X_NW (.prog(X_prog_NW), .V_i(Y_N[1]), .V_o(N_o), .H_i(W_i), .H_o(Y_W[0]));
+  Xnodes #(.V(16), .H(32)) X_NW (.prog(X_prog_NW), .V_i(Y_N[1]), .V_o(N_o), .H_i(W_i), .H_o(Y_E[0]));
   Xnodes #(.V(32), .H(32)) X_NE (.prog(X_prog_NE), .V_i(N_i), .V_o(Y_S[0]), .H_i(Y_E[1]), .H_o(E_o));
   Xnodes #(.V(16), .H(16)) X_SW (.prog(X_prog_SW), .V_i(S_i), .V_o(Y_N[0]), .H_i(Y_W[1]), .H_o(W_o));
-  Xnodes #(.V(32), .H(16)) X_SE (.prog(X_prog_SE), .V_i(Y_S[1]), .V_o(S_o), .H_i(E_i), .H_o(Y_E[0]));
+  Xnodes #(.V(32), .H(16)) X_SE (.prog(X_prog_SE), .V_i(Y_S[1]), .V_o(S_o), .H_i(E_i), .H_o(Y_W[0]));
 
 endmodule
 
@@ -104,8 +104,8 @@ endmodule
 // Logic V Crossbar Module
 module V_crossbar (
   //Global Clock/Reset
-  input wire 	 	 clk,
-  input wire      	 nres,
+  input wire clk,
+  input wire nres,
   //Programming Interface
   input wire  [31:0] prog_i,
   input wire		 prog_shft,
@@ -166,8 +166,6 @@ module V_crossbar (
   
   // Wires
   
-  logic [15:0] V_S;
-  logic [31:0] V_N;
   logic  [1:0] LD_B[3:0];
   logic  [7:0] LO_D[3:0];
   logic [15:0] LO_N[8:0];
@@ -176,8 +174,11 @@ module V_crossbar (
 
   // Instances
   
-  Vnodes #(.V(16)) S_N0 (.V_i(N_i), .V_o(LO_N[9]));
-  Vnodes #(.V(32)) V_S0 (.V_i(S_i), .V_o(LO_S[0]));
+  Vnodes #(.V(16)) V_N0 (.V_i(S_i), .V_o(LO_N[8]));
+  assign N_o = LO_N[0];
+
+  Vnodes #(.V(32)) V_S0 (.V_i(N_i), .V_o(LO_S[0]));
+  assign S_o = LO_S[8];
 
   generate
     for(x = 0; x < 4; x++)begin
@@ -198,8 +199,8 @@ endmodule
 // Logic H Crossbar Module
 module H_crossbar (
   //Global Clock/Reset
-  input wire 	 	 clk,
-  input wire      	 nres,
+  input wire clk,
+  input wire nres,
   //Programming Interface
   input wire  [31:0] prog_i,
   input wire		 prog_shft,
@@ -286,8 +287,8 @@ module H_crossbar (
   logic [9:0] So[5:0];
   logic [5:0] Si[2:0];
 
-  logic [15:0] Wires_W[6:0];
-  logic [31:0] Wires_E[6:0];
+  logic [15:0] wires_W[6:0];
+  logic [31:0] wires_E[6:0];
 
   // Instances
   
@@ -295,23 +296,20 @@ module H_crossbar (
   Vnodes #(.V(18)) V_No (.V_i({No[2], No[1], No[0]}), .V_o(N_o));
   Vnodes #(.V(18)) V_Si (.V_i(S_i), .V_o({Si[2], Si[1], Si[0]}));
   Vnodes #(.V(30)) V_So (.V_i({So[5], So[4], So[3]}), .V_o(S_o));
+  
+  assign wires_W[0] = E_i;
+  assign W_o = wires_W[6];
+  assign wires_E[6] = W_i;
+  assign E_o = wires_E[0];
 
   generate
     for(x = 0; x < 3; x++)begin
-      Xnodes #(.V(10), .H(32)) X_Ni (.prog(X_prog_Wd[x]), .V_i(Ni[x]), .V_o(XNi[x]), .H_i(Wires_E[2*x+1]), .H_o(Wires_E[2*x]));
-      Xnodes #(.V(6), .H(32)) X_No (.prog(X_prog_Wu[x]), .V_i(XNo[x]), .V_o(No[x]), .H_i(Wires_E[2*x+2]), .H_o(Wires_E[2*x+1]));
+      Xnodes #(.V(10), .H(32)) X_Ni (.prog(X_prog_Wd[x]), .V_i(Ni[x]), .V_o(XNi[x]), .H_i(wires_E[2*x+1]), .H_o(wires_E[2*x]));
+      Xnodes #(.V(6), .H(32)) X_No (.prog(X_prog_Wu[x]), .V_i(XNo[x]), .V_o(No[x]), .H_i(wires_E[2*x+2]), .H_o(wires_E[2*x+1]));
       Ynodes #(.V(10)) Y_S (.prog(Y_prog[x][9:0]), .V_i(XNi[x]), .V_o(XSo[x]));
       Ynodes #(.V(6)) Y_N (.prog(Y_prog[x][15:10]), .V_i(XSi[x]), .V_o(XNo[x]));
-      Xnodes #(.V(10), .H(16)) X_So (.prog(X_prog_Ed[x]), 
-      .V_i(XSo[x]), 
-      .V_o(), //.V_o(So[X]), 
-      .H_i(Wires_W[2*x]), 
-      .H_o(Wires_W[2*x+1]));
-      Xnodes #(.V(6), .H(16)) X_Si (.prog(X_prog_Eu[x]), 
-      .V_i(Si[x]), 
-      .V_o(XSi[x]), 
-      .H_i(Wires_W[2*x+1]), 
-      .H_o(Wires_W[2*x+2]));
+      Xnodes #(.V(10), .H(16)) X_So (.prog(X_prog_Ed[x]), .V_i(XSo[x]),  .V_o(So[x]),  .H_i(wires_W[2*x]),  .H_o(wires_W[2*x+1]));
+      Xnodes #(.V(6), .H(16)) X_Si (.prog(X_prog_Eu[x]), .V_i(Si[x]), .V_o(XSi[x]), .H_i(wires_W[2*x+1]), .H_o(wires_W[2*x+2]));
     end
   endgenerate
   
