@@ -5,7 +5,7 @@ module eFPGA (
   input wire nres,
   //Programming Interface
   input wire   [31:0] prog_i,
-  input wire    [8:0] prog_shft,
+  input wire    [6:0] prog_shft,
   //Module In/Out
   input wire          data_en,
   input wire  [95:0] data_in,

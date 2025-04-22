@@ -13,8 +13,8 @@ module logic_slice (
   output wire [29:0] S_o,
   input wire  [17:0] S_i,
   output wire [17:0] N_o,
-  output wire  [7:0] W_i,
-  input wire  [31:0] E_o
+  input wire  [31:0] W_i,
+  output wire  [7:0] E_o
 );
   //  Programming Logic
   //set length of programming by number of 32bit regs:
@@ -74,8 +74,8 @@ module logic_slice (
   
   logic [7:0] Lo[3:0];
   logic [31:0] Li[3:0];
-  logic [17:0] Wires_U[5:0];
-  logic [29:0] Wires_D[5:0];
+  logic [17:0] wires_U[5:0];
+  logic [29:0] wires_D[5:0];
 
   // Instances
   
@@ -84,27 +84,27 @@ module logic_slice (
       logic_module LM0 (.prog(LM_prog[x*4]),   .data_out(Lo[0][x*2+1:x*2]),
                                                .data_in(Li[0][x*8+4:x*8]), .reg_in(Li[0][x*8+5]), .reg_clk(Li[0][x*8+6]), .reg_nres(Li[0][x*8+7]));
       logic_switch LS0 (.prog(LS_prog[x*3]),   .data_in(Li[0][x*8+4:x*8]), .reg_in(Li[0][x*8+5]), .reg_clk(Li[0][x*8+6]), .reg_nres(Li[0][x*8+7]),
-                                               .data_out(Lo[1][x*2+1:x*2]), .up_out(Wires_U[x][5:0]), .down_in(Wires_D[x][9:0]), .up_in(Wires_U[x+1][5:0]), .down_out(Wires_D[x+1][9:0]));
+                                               .data_out(Lo[1][x*2+1:x*2]), .up_out(wires_U[x][5:0]), .down_in(wires_D[x][9:0]), .up_in(wires_U[x+1][5:0]), .down_out(wires_D[x+1][9:0]));
       logic_module LM1 (.prog(LM_prog[x*4+1]), .data_out(Lo[1][x*2+1:x*2]),
                                                .data_in(Li[1][x*8+4:x*8]), .reg_in(Li[1][x*8+5]), .reg_clk(Li[1][x*8+6]), .reg_nres(Li[1][x*8+7]));
       logic_switch LS1 (.prog(LS_prog[x*3+1]), .data_in(Li[1][x*8+4:x*8]), .reg_in(Li[1][x*8+5]), .reg_clk(Li[1][x*8+6]), .reg_nres(Li[1][x*8+7]),
-                                               .data_out(Lo[2][x*2+1:x*2]), .up_out(Wires_U[x][11:6]), .down_in(Wires_D[x][19:10]), .up_in(Wires_U[x+1][11:6]), .down_out(Wires_D[x+1][19:10]));
+                                               .data_out(Lo[2][x*2+1:x*2]), .up_out(wires_U[x][11:6]), .down_in(wires_D[x][19:10]), .up_in(wires_U[x+1][11:6]), .down_out(wires_D[x+1][19:10]));
       logic_module LM2 (.prog(LM_prog[x*4+2]), .data_out(Lo[2][x*2+1:x*2]),
                                                .data_in(Li[2][x*8+4:x*8]), .reg_in(Li[2][x*8+5]), .reg_clk(Li[2][x*8+6]), .reg_nres(Li[2][x*8+7]));
       logic_switch LS2 (.prog(LS_prog[x*3+2]), .data_in(Li[2][x*8+4:x*8]), .reg_in(Li[2][x*8+5]), .reg_clk(Li[2][x*8+6]), .reg_nres(Li[2][x*8+7]),
-                                               .data_out(Lo[3][x*2+1:x*2]), .up_out(Wires_U[x][17:12]), .down_in(Wires_D[x][29:20]), .up_in(Wires_U[x+1][17:12]), .down_out(Wires_D[x+1][29:20]));
+                                               .data_out(Lo[3][x*2+1:x*2]), .up_out(wires_U[x][17:12]), .down_in(wires_D[x][29:20]), .up_in(wires_U[x+1][17:12]), .down_out(wires_D[x+1][29:20]));
       logic_module LM3 (.prog(LM_prog[x*4+3]), .data_out(Lo[3][x*2+1:x*2]),
                                                .data_in(Li[3][x*8+4:x*8]), .reg_in(Li[3][x*8+5]), .reg_clk(Li[3][x*8+6]), .reg_nres(Li[3][x*8+7]));
     end
   endgenerate
 
   // In/Out Connections
-  assign W_i = Lo[0];
-  assign Li[3] = E_o;
-  assign Wires_U[5] = S_i;
-  assign N_o = Wires_U[0];
-  assign Wires_D[0] = N_i;
-  assign S_o = Wires_D[5];
+  assign Li[3] = W_i;
+  assign E_o = Lo[0];
+  assign wires_U[5] = S_i;
+  assign N_o = wires_U[0];
+  assign wires_D[0] = N_i;
+  assign S_o = wires_D[5];
 
 endmodule
 
