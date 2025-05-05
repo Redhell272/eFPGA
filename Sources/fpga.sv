@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 
 // Full FPGA Module
 module fpga #(V, H) (
@@ -19,8 +20,11 @@ module fpga #(V, H) (
   logic [31:0] data_iCB[H-1:0];
   logic  [7:0] data_iCBV[H-1:0];
   
-  logic [(V*62)+31:0] wires_U[2*H:0];
-  logic [(V*34)+15:0] wires_D[2*H:0];
+  logic [(V*34)+15:0] wires_U[2*H:0];
+  logic [(V*62)+31:0] wires_D[2*H:0];
+
+  //unconnected edge input wire value:
+  assign wires_D[0] = '0;
 
   // Instances
   
@@ -43,7 +47,7 @@ module fpga #(V, H) (
       
   // Last Crossbar line
   crossbar_line #(.V(V)) CLE (.clk(clk), .nres(nres), .prog_i(prog_i), .prog_shft(prog_shft[2*H]),
-    .N_i(wires_D[2*H]), .S_o(), .S_i(), .N_o(wires_U[2*H]), .data_iCB(), .data_o(data_out[32*H+31:32*H]));
+    .N_i(wires_D[2*H]), .S_o(), .S_i('0), .N_o(wires_U[2*H]), .data_iCB('0), .data_o(data_out[32*H+31:32*H]));
   
 endmodule
 
@@ -76,12 +80,15 @@ module crossbar_line #(V) (
   
   // Assigns
   
+  //unconnected edge input wire value:
+  assign wires_E[2*V] = '0;
+
   assign data_o = wires_W[2*V];
   
   // Instances
   
   crossbar CB0 (.clk(clk), .nres(nres), .prog_i(prog_i), .prog_shft(prog_shft), .prog_o(prog[0]),
-    .N_i(N_i[31:0]), .S_o(S_o[31:0]), .S_i(S_i[15:0]), .N_o(N_o[15:0]), .W_i(data_iCB), .E_o(wires_W[0]), .E_i(wires_E[0]), .W_o());
+    .N_i(N_i[(V*62)+31:(V*62)]), .S_o(S_o[(V*62)+31:(V*62)]), .S_i(S_i[(V*34)+15:(V*34)]), .N_o(N_o[(V*34)+15:(V*34)]), .W_i(data_iCB), .E_o(wires_W[0]), .E_i(wires_E[0]), .W_o());
   genvar x;
   generate
     for(x = 0; x < V; x++)begin
@@ -125,7 +132,7 @@ module logic_line #(V) (
   // Instances
   
   V_crossbar VCB0 (.clk(clk), .nres(nres), .prog_i(prog_i), .prog_shft(prog_shft), .prog_o(prog[0]),
-    .N_i(N_i[31:0]), .S_o(S_o[31:0]), .S_i(S_i[15:0]), .N_o(N_o[15:0]), .W_i(data_iCBV), .E_o(wires_LI[0]));
+    .N_i(N_i[(V*62)+31:(V*62)]), .S_o(S_o[(V*62)+31:(V*62)]), .S_i(S_i[(V*34)+15:(V*34)]), .N_o(N_o[(V*34)+15:(V*34)]), .W_i(data_iCBV), .E_o(wires_LI[0]));
   genvar x;
   generate
     for(x = 0; x < V; x++)begin

@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 
 // Matrix of X nodes
 module Xnodes #(V, H) (
@@ -22,7 +23,7 @@ module Xnodes #(V, H) (
   genvar x;
   generate
     for(x = 0; x < H; x++)begin
-      assign X_prog[x] = prog[((V*H)-1)-V*x:(V*H)-V-V*x];
+      assign X_prog[x] = prog[V-1+V*x:0+V*x]; //prog[((V*H)-1)-V*x:(V*H)-V-V*x];
       
       assign wiresH[x][0] = H_i[x];
       assign H_o[x] = wiresH[x][V];

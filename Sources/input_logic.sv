@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 
 // Synchronization Registers Module
 module input_logic (
@@ -194,7 +195,7 @@ module REGS (
   //----------------------------- Combinational -----------------------------
   
   //Mux Process
-  always @(REGS or prog)
+  always @(REGS or data_in or prog)
     begin
       case (prog[1:0])
         2'b00 : REGS_out <= data_in;

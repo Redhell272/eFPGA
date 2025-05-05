@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 
 // General Crossbar Module
 module crossbar (
@@ -246,7 +247,7 @@ module H_crossbar (
   logic  [511:0] X_prog_W[2:0];
   logic  [255:0] X_prog_E[2:0];
   logic  [319:0] X_prog_Wd[2:0];
-  logic  [192:0] X_prog_Wu[2:0];
+  logic  [191:0] X_prog_Wu[2:0];
   logic  [159:0] X_prog_Ed[2:0];
   logic   [95:0] X_prog_Eu[2:0];
   
@@ -258,8 +259,8 @@ module H_crossbar (
   generate
     for(x = 0; x < 3; x++)begin
       for(y = 0; y < 8; y++)begin
-        assign X_prog_W[x][y*64+31:y*64] = (prog_shft == 0) ? prog[4+y+x*24] : 'Z;
-        assign X_prog_W[x][y*64+63:y*64+32] = (prog_shft == 0) ? prog[12+y+x*24] : 'Z;
+        assign X_prog_W[x][y*64+31:y*64] = (prog_shft == 0) ? prog[4+2*y+x*24] : 'Z;
+        assign X_prog_W[x][y*64+63:y*64+32] = (prog_shft == 0) ? prog[5+2*y+x*24] : 'Z;
         assign X_prog_E[x][y*32+31:y*32] = (prog_shft == 0) ? prog[20+y+x*24] : 'Z;
       end
       for(y = 0; y < 16; y++)begin

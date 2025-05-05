@@ -1,4 +1,5 @@
 `timescale 1ns/1ps
+
 //Test Logic Switch
 module testbench;
 
@@ -9,13 +10,6 @@ module testbench;
   reg         data_en=1'b0;
   reg  [95:0] data_in=96'hF0E0D0C0B0A0908070605040;
   wire[127:0] data_out;
-
-  input wire   [31:0] prog_i,
-  input wire    [6:0] prog_shft,
-  //Module In/Out
-  input wire          data_en,
-  input wire  [95:0] data_in,
-  output wire [127:0] data_out
   
   // Instantiate Units Under Test
   fpga #(.V(2), .H(3)) UUT (
