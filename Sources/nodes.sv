@@ -40,7 +40,7 @@ module Xnodes #(V, H) (
     for(x = 0; x < H; x++)begin
       for(y = 0; y < V; y++)begin
         //assign wiresV[x+1][y] = wiresV[x][y]; assign wiresH[x][y+1] = wiresH[x][y];
-        XnodeNW X0 (.prog(X_prog[x][y]), .N(wiresV[x][y]), .E(wiresH[x][y+1]), .S(wiresV[x+1][y]), .W(wiresH[x][y]));
+        Xnode X0 (.prog(X_prog[x][y]), .N(wiresV[x][y]), .E(wiresH[x][y+1]), .S(wiresV[x+1][y]), .W(wiresH[x][y]));
       end
     end
   endgenerate
@@ -90,7 +90,7 @@ endmodule
 
 
 //X in N/W
-module XnodeNW (
+module Xnode (
   //Programming Input
   input wire prog,
   //in/outs
@@ -102,22 +102,6 @@ module XnodeNW (
 
   assign E = prog ? N || W : W;
   assign S = prog ? W || N : N;
-  
-endmodule
-
-//X in N/E
-module XnodeNE (
-  //Programming Input
-  input wire prog,
-  //in/outs
-  input wire N,
-  input wire E,
-  output wire S,
-  output wire W
-);
-
-  assign W = prog ? N || E : E;
-  assign S = prog ? E || N : N;
   
 endmodule
 
@@ -134,22 +118,6 @@ module XnodeSW (
 
   assign E = prog ? S || W : W;
   assign N = prog ? W || S : S;
-  
-endmodule
-
-//X in S/E
-module XnodeSE (
-  //Programming Input
-  input wire prog,
-  //in/outs
-  input wire S,
-  input wire E,
-  output wire N,
-  output wire W
-);
-
-  assign W = prog ? S || E : E;
-  assign N = prog ? E || S : S;
   
 endmodule
 

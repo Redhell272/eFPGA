@@ -308,7 +308,7 @@ module logic_switch (
       XnodeSW XoU0 (.prog(out_prog_up[1-x][1]), .N(out_H[x][7]), .E(), .S(out_H[x+1][7]), .W(data_out[x]));
       XnodeSW XoU1 (.prog(out_prog_up[1-x][0]), .N(out_H[x][6]), .E(), .S(out_H[x+1][6]), .W(data_out[x]));
       for(y = 0; y < 6; y++)begin
-        XnodeNW XoD0 (.prog(out_prog_down[1-x][y]), .N(out_H[x][y]), .E(), .S(out_H[x+1][y]), .W(data_out[x]));
+        Xnode XoD0 (.prog(out_prog_down[1-x][y]), .N(out_H[x][y]), .E(), .S(out_H[x+1][y]), .W(data_out[x]));
       end
       //Out Direct
       for(y = 0; y < 8; y++)begin
@@ -318,7 +318,7 @@ module logic_switch (
     for(x = 0; x < 8; x++)begin
       //In Down
       for(y = 0; y < 10; y++)begin
-        XnodeNW XiD0 (.prog(in_prog_down[x][y]), .N(wiresV[x][y]), .E(wiresH[x][y]), .S(wiresV[x+1][y]), .W(wiresH[x][y+1]));
+        Xnode XiD0 (.prog(in_prog_down[x][y]), .N(wiresV[x][y]), .E(wiresH[x][y]), .S(wiresV[x+1][y]), .W(wiresH[x][y+1]));
       end
       //In Up
       for(y = 0; y < 6; y++)begin
