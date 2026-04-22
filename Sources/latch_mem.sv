@@ -97,11 +97,12 @@ module prog #(D, E) (
   reg [(D*8)-1:0] prog_D_line_in;
   reg [E-1:0] prog_en_line;
   reg prog_shft;
+  reg [1:0] prog_reset;
 
   // Assigns
   assign prog_s_out = prog_en_line[E-1];
 
-  assign en = prog_apply ? prog_en_line : '0;
+  assign en = (prog_apply || prog_reset != 2'b00) ? prog_en_line : '0;
   assign data = prog_D_line;
   
   genvar x;
@@ -121,8 +122,18 @@ module prog #(D, E) (
         prog_D_line <= '0;
         prog_en_line <= '0;
         prog_shft <= 1'b1;
+        prog_reset <= 2'b01;
       end else begin
-        if (prog_en == 1) begin
+
+        if (prog_reset != 2'b00) begin
+          prog_reset <= {prog_reset[0], 1'b0};
+          if (prog_reset[0] == 1) begin
+            prog_en_line <= '1;
+          end else if (prog_reset[1] == 1) begin
+            prog_en_line <= '0;
+          end
+
+        end else if (prog_en == 1) begin
           prog_shft <= 1'b0;
           prog_D_sel[0] <= prog_D_sel[D-1];
           prog_D_sel[D-1:1] <= prog_D_sel[D-2:0];
@@ -130,11 +141,13 @@ module prog #(D, E) (
           if (prog_shft == 1) begin
             prog_en_line <= {prog_en_line[E-2:0], prog_s_in};
           end
+
         end else begin
           prog_shft <= 1'b1;
           if (prog_shft == 1 && prog_en_line[E-1] == 1) begin
             prog_en_line <= '0;
           end
+          
         end
       end
     end

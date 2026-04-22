@@ -130,6 +130,7 @@ module testbench;
     
     //Testbench Inputs
     #20 prog_nres=1;
+    #40 prog_nres=1;
     
     load_prog_CB({16'h0000,8'h00,32'h00000001}); //0
     load_prog_CB({16'h0000,8'h00,32'h00000002}); //1

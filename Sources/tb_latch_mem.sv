@@ -72,6 +72,7 @@ module testbench;
     
     //Testbench Inputs
     #20 prog_nres=1;
+    #40 prog_nres=1;
 
     load_prog(16'hAA55); //0
     load_prog(16'hBB44); //1
