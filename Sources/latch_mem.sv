@@ -7,8 +7,9 @@ module latch_mem (
   input wire       prog_clk,
   input wire [7:0] prog_D,
   input wire       prog_en,
-  input wire       prog_shft,
-  input wire       prog_s,
+  input wire       prog_apply,
+  input wire       prog_s_in,
+  output wire      prog_s_out,
   //in/outs
   output wire [15:0] data_out_0,
   output wire [15:0] data_out_1,
@@ -29,19 +30,26 @@ module latch_mem (
 );
   
   // Registers
-  reg  [1:0] prog_D_sel;
-  reg [15:0] prog_D_line;
-  reg [15:0] prog_en_line;
 
   // Wires
   wire [15:0] en;
   wire [15:0] data;
 
   // Assigns
-  assign en = prog_en ? prog_en_line : '0;
-  assign data = prog_D_line;
 
   // Instances
+  prog #(.D(2), .E(16)) P0 (
+    .prog_nres(prog_nres),
+    .prog_clk(prog_clk),
+    .prog_D(prog_D),
+    .prog_en(prog_en),
+    .prog_apply(prog_apply),
+    .prog_s_in(prog_s_in),
+    .prog_s_out(prog_s_out),
+    .en(en),
+    .data(data)
+  );
+  
   genvar x;
   generate
     for(x = 0; x < 16; x++)begin
@@ -63,48 +71,69 @@ module latch_mem (
       latch L15 (.D(data[x]), .E(en[15]), .O(data_out_15[x]));
     end
   endgenerate
+  
+endmodule
+
+
+
+//configurable programming interface
+module prog #(D, E) (
+  //Programming Input
+  input wire       prog_nres,
+  input wire       prog_clk,
+  input wire [7:0] prog_D,
+  input wire       prog_en,
+  input wire       prog_apply,
+  input wire       prog_s_in,
+  output wire      prog_s_out,
+  //Programming Output
+  output wire [E-1:0] en,
+  output wire [(D*8)-1:0] data
+);
+  
+  // Registers
+  reg [D-1:0] prog_D_sel;
+  reg [(D*8)-1:0] prog_D_line;
+  reg [(D*8)-1:0] prog_D_line_in;
+  reg [E-1:0] prog_en_line;
+  reg prog_shft;
+
+  // Assigns
+  assign prog_s_out = prog_en_line[E-1];
+
+  assign en = prog_apply ? prog_en_line : '0;
+  assign data = prog_D_line;
+  
+  genvar x;
+  generate
+    for(x = 0; x < D; x++)begin
+      assign prog_D_line_in[((x+1)*8)-1:(x*8)] = (prog_en & prog_D_sel[x]) ? prog_D : prog_D_line[((x+1)*8)-1:(x*8)];
+    end
+  endgenerate
 
   // Processes  
   //------------------------------- Sequential ------------------------------
   always @(posedge prog_clk or negedge prog_nres)
     begin
       if (prog_nres == 0) begin
-        prog_D_sel <= 2'b01;
+        prog_D_sel[0] <= 1'b1;
+        prog_D_sel[D-1:1] <= '0;
         prog_D_line <= '0;
         prog_en_line <= '0;
+        prog_shft <= 1'b1;
       end else begin
-        if (prog_en == 0) begin
-          prog_D_sel <= {prog_D_sel[0], prog_D_sel[1]};
-          if (prog_D_sel[0] == 1)
-            prog_D_line[7:0] <= prog_D;
-          if (prog_D_sel[1] == 1)
-            prog_D_line[15:8] <= prog_D;
-        end 
-        if (prog_shft == 1) begin
-          prog_en_line <= {prog_en_line[14:0], prog_s};
+        if (prog_en == 1) begin
+          prog_shft <= 1'b0;
+          prog_D_sel[0] <= prog_D_sel[D-1];
+          prog_D_sel[D-1:1] <= prog_D_sel[D-2:0];
+          prog_D_line <= prog_D_line_in;
+          if (prog_shft == 1) begin
+            prog_en_line <= {prog_en_line[E-2:0], prog_s_in};
+          end
+        end else begin
+          prog_shft <= 1'b1;
         end
       end
     end
   
-endmodule
-
-
-
-//Latch
-module latch (
-  //in/outs
-  input wire D,
-  input wire E,
-  output wire O
-);
-
-  reg i;
-  assign O = i;
-
-  always @(E)
-    begin
-      if (E == 1) 
-        i <= D;
-    end
-
 endmodule

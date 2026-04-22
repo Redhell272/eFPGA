@@ -8,8 +8,9 @@ module testbench;
   reg prog_clk=0;
   reg [7:0] prog_D='0;
   reg prog_en=0;
-  reg prog_s=1;
-  reg prog_shft=0;
+  reg prog_apply=0;
+  reg prog_s_in=1;
+  wire prog_s_out;
   wire [15:0] data_out_0;
   wire [15:0] data_out_1;
   wire [15:0] data_out_2;
@@ -33,8 +34,9 @@ module testbench;
     .prog_clk(prog_clk),
     .prog_D(prog_D),
     .prog_en(prog_en),
-    .prog_s(prog_s),
-    .prog_shft(prog_shft),
+    .prog_apply(prog_apply),
+    .prog_s_in(prog_s_in),
+    .prog_s_out(prog_s_out),
     .data_out_0(data_out_0),
     .data_out_1(data_out_1),
     .data_out_2(data_out_2),
@@ -55,9 +57,9 @@ module testbench;
   task load_prog;
     input [15:0] D;
     begin
-      #10 prog_D=D[7:0]; prog_shft=1; prog_en=0; 
-      #10 prog_D=D[15:8]; prog_shft=0;
-      #10 prog_en=1; prog_s=0;
+      #10 prog_D=D[7:0]; prog_apply=0; prog_en=1; 
+      #10 prog_D=D[15:8];
+      #10 prog_apply=1; prog_en=0;  prog_s_in=0;
     end
   endtask 
 
