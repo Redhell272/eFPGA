@@ -95,6 +95,7 @@ module testbench;
     load_prog(16'h0F00);
     load_prog(16'hF000);
     
+    #10 prog_apply=0;
   end
 
   //Clocks

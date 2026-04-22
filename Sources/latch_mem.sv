@@ -2,7 +2,7 @@
 
 // test of latch memory array
 module latch_mem (
-  //Programming Input
+  //Programming Interface
   input wire       prog_nres,
   input wire       prog_clk,
   input wire [7:0] prog_D,
@@ -38,7 +38,7 @@ module latch_mem (
   // Assigns
 
   // Instances
-  prog #(.D(2), .E(16)) P0 (
+  prog #(.D(2), .E(16)) Prog0 (
     .prog_nres(prog_nres),
     .prog_clk(prog_clk),
     .prog_D(prog_D),
@@ -132,6 +132,9 @@ module prog #(D, E) (
           end
         end else begin
           prog_shft <= 1'b1;
+          if (prog_shft == 1 && prog_en_line[E-1] == 1) begin
+            prog_en_line <= '0;
+          end
         end
       end
     end
