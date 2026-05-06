@@ -2,52 +2,59 @@
 
 // Full FPGA Module
 module fpga #(V, H) (
-  //Global Clock/Reset
-  input wire clk,
-  input wire nres,
   //Programming Interface
-  input wire            [31:0] prog_i,
-  input wire           [H*2:0] prog_shft,
+  input wire         prog_nres,
+  input wire         prog_clk,
+  input wire   [7:0] prog_D,
+  input wire         prog_en,
+  input wire         prog_apply,
+  input wire [2*H:0] prog_s,
+  //Register Inputs
+  input wire         reg_nres,
+  input wire         reg_clk,
   //Module In/Out
-  input wire                   data_en,
-  input wire      [(32*H)-1:0] data_in,
-  output wire [(32*(H+1))-1:0] data_out
+  input wire  [62*V+31:0] N_i,
+  output wire [62*V+31:0] S_o,
+  input wire  [34*V+15:0] S_i,
+  output wire [34*V+15:0] N_o,
+  input wire  [40*H+31:0] W_i,
+  output wire [56*H+31:0] E_o,
+  input wire  [16*H+15:0] E_i,
+  output wire [16*H+15:0] W_o
 );
   
   // Wires
   
-  logic [31:0] prog[H-1:0];
-  logic [31:0] data_iCB[H-1:0];
-  logic  [7:0] data_iCBV[H-1:0];
-  
-  logic [(V*34)+15:0] wires_U[2*H:0];
-  logic [(V*62)+31:0] wires_D[2*H:0];
+  logic [34*V+15:0] wires_U[2*H:0];
+  logic [62*V+31:0] wires_D[2*H:0];
 
-  //unconnected edge input wire value:
-  assign wires_D[0] = '0;
+  // Assigns
+  
+  assign wires_D[0] = N_i;
+  assign N_o = wires_U[0];
 
   // Instances
   
   genvar x;
   generate
     for(x = 0; x < H; x++)begin
-      // Input Logic starting each line
-      input_logic IL (.clk(clk), .nres(nres), .prog_i(prog_i), .prog_shft(prog_shft[2*x+1]), .prog_o(prog[x]),
-        .data_in(data_in[32*x+31:32*x]), .en(data_en), .data_oCB(data_iCB[x]), .data_oCBV(data_iCBV[x]));
-      
       // Crossbar line
-      crossbar_line #(.V(V)) CL (.clk(clk), .nres(nres), .prog_i(prog_i), .prog_shft(prog_shft[2*x]),
-        .N_i(wires_D[2*x]), .S_o(wires_D[2*x+1]), .S_i(wires_U[2*x+1]), .N_o(wires_U[2*x]), .data_iCB(data_iCB[x]), .data_o(data_out[32*x+31:32*x]));
+      crossbar_line #(.V(V)) CL (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*x]),
+        .N_i(wires_D[2*x]), .S_o(wires_D[2*x+1]), .S_i(wires_U[2*x+1]), .N_o(wires_U[2*x]),
+        .W_i(W_i[40*x+31:40*x]), .E_o(E_o[56*x+31:56*x]), .E_i(E_i[16*x+15:16*x]), .W_o(W_o[16*x+15:16*x]));
       
       // Logic line
-      logic_line #(.V(V)) LL (.clk(clk), .nres(nres), .prog_i(prog[x]), .prog_shft(prog_shft[2*x+1]),
-        .N_i(wires_D[2*x+1]), .S_o(wires_D[2*x+2]), .S_i(wires_U[2*x+2]), .N_o(wires_U[2*x+1]), .data_iCBV(data_iCBV[x]));
+      logic_line #(.V(V)) LL (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*x+1]),
+        .reg_nres(reg_nres), .reg_clk(reg_clk),
+        .N_i(wires_D[2*x+1]), .S_o(wires_D[2*x+2]), .S_i(wires_U[2*x+2]), .N_o(wires_U[2*x+1]),
+        .W_i(W_i[40*x+39:40*x+32]), .E_o(E_o[56*x+55:56*x+32]));
     end
   endgenerate
       
   // Last Crossbar line
-  crossbar_line #(.V(V)) CLE (.clk(clk), .nres(nres), .prog_i(prog_i), .prog_shft(prog_shft[2*H]),
-    .N_i(wires_D[2*H]), .S_o(), .S_i('0), .N_o(wires_U[2*H]), .data_iCB('0), .data_o(data_out[32*H+31:32*H]));
+  crossbar_line #(.V(V)) CLE (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*H]),
+    .N_i(wires_D[2*H]), .S_o(S_o), .S_i(S_i), .N_o(wires_U[2*H]),
+    .W_i(W_i[40*H+31:40*H]), .E_o(E_o[56*H+31:56*H]), .E_i(E_i[16*H+15:16*H]), .W_o(W_o[16*H+15:16*H]));
   
 endmodule
 
@@ -57,46 +64,47 @@ endmodule
 
 // Crossbar FPGA Line
 module crossbar_line #(V) (
-  //Global Clock/Reset
-  input wire clk,
-  input wire nres,
   //Programming Interface
-  input wire  [31:0] prog_i,
-  input wire         prog_shft,
+  input wire         prog_nres,
+  input wire         prog_clk,
+  input wire   [7:0] prog_D,
+  input wire         prog_en,
+  input wire         prog_apply,
+  input wire         prog_s_in,
   //Module In/Out
   input wire  [(V*62)+31:0] N_i,
   output wire [(V*62)+31:0] S_o,
   input wire  [(V*34)+15:0] S_i,
   output wire [(V*34)+15:0] N_o,
-  input wire  [31:0] data_iCB,
-  output wire [31:0] data_o
+  input wire  [31:0] W_i,
+  output wire [31:0] E_o,
+  input wire  [15:0] E_i,
+  output wire [15:0] W_o
 );
   
   // Wires
   
-  logic [31:0] prog[2*V:0];
+  logic [2*V:0] prog_s;
   logic [31:0] wires_W[2*V:0];
   logic [15:0] wires_E[2*V:0];
   
   // Assigns
   
-  //unconnected edge input wire value:
-  assign wires_E[2*V] = '0;
-
-  assign data_o = wires_W[2*V];
+  assign wires_E[2*V] = E_i;
+  assign E_o = wires_W[2*V];
   
   // Instances
   
-  crossbar CB0 (.clk(clk), .nres(nres), .prog_i(prog_i), .prog_shft(prog_shft), .prog_o(prog[0]),
-    .N_i(N_i[(V*62)+31:(V*62)]), .S_o(S_o[(V*62)+31:(V*62)]), .S_i(S_i[(V*34)+15:(V*34)]), .N_o(N_o[(V*34)+15:(V*34)]), .W_i(data_iCB), .E_o(wires_W[0]), .E_i(wires_E[0]), .W_o());
+  crossbar CB0 (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s_in), .prog_s_out(prog_s[0]),
+    .N_i(N_i[(V*62)+31:(V*62)]), .S_o(S_o[(V*62)+31:(V*62)]), .S_i(S_i[(V*34)+15:(V*34)]), .N_o(N_o[(V*34)+15:(V*34)]), .W_i(W_i), .E_o(wires_W[0]), .E_i(wires_E[0]), .W_o(W_o));
   genvar x;
   generate
     for(x = 0; x < V; x++)begin
-      H_crossbar HCB (.clk(clk), .nres(nres), .prog_i(prog[2*x]), .prog_shft(prog_shft), .prog_o(prog[2*x+1]),
+      H_crossbar HCB (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*x]), .prog_s_out(prog_s[2*x+1]),
         .N_i(N_i[x*62+61:x*62+32]), .S_o(S_o[x*62+61:x*62+32]), .S_i(S_i[x*34+33:x*34+16]), .N_o(N_o[x*34+33:x*34+16]),
         .W_i(wires_W[2*x]), .E_o(wires_W[2*x+1]), .E_i(wires_E[2*x+1]), .W_o(wires_E[2*x]));
-      crossbar CB (.clk(clk), .nres(nres), .prog_i(prog[2*x+1]), .prog_shft(prog_shft), .prog_o(prog[2*x+2]),
-        .N_i(N_i[x*63+31:x*63+0]), .S_o(S_o[x*63+31:x*63+0]), .S_i(S_i[x*35+15:x*35+0]), .N_o(N_o[x*35+15:x*35+0]),
+      crossbar CB (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*x+1]), .prog_s_out(prog_s[2*x+2]),
+        .N_i(N_i[x*62+31:x*62+0]), .S_o(S_o[x*62+31:x*62+0]), .S_i(S_i[x*34+15:x*34+0]), .N_o(N_o[x*34+15:x*34+0]),
         .W_i(wires_W[2*x+1]), .E_o(wires_W[2*x+2]), .E_i(wires_E[2*x+2]), .W_o(wires_E[2*x+1]));
     end
   endgenerate
@@ -109,38 +117,48 @@ endmodule
 
 // Logic FPGA Line
 module logic_line #(V) (
-  //Global Clock/Reset
-  input wire clk,
-  input wire nres,
   //Programming Interface
-  input wire [31:0] prog_i,
-  input wire        prog_shft,
+  input wire         prog_nres,
+  input wire         prog_clk,
+  input wire   [7:0] prog_D,
+  input wire         prog_en,
+  input wire         prog_apply,
+  input wire         prog_s_in,
+  //Register Inputs
+  input wire         reg_nres,
+  input wire         reg_clk,
   //Module In/Out
   input wire  [(V*62)+31:0] N_i,
   output wire [(V*62)+31:0] S_o,
   input wire  [(V*34)+15:0] S_i,
   output wire [(V*34)+15:0] N_o,
-  input wire  [7:0] data_iCBV
+  input wire          [7:0] W_i,
+  output wire        [23:0] E_o
 );
   
   // Wires
   
-  logic [31:0] prog[2*V:0];
+  logic [2*V:0] prog_s;
   logic  [7:0] wires_LO[V-1:0];
-  logic [31:0] wires_LI[V:0];
+  logic [23:0] wires_LI[V:0];
+  
+  // Assigns
+  
+  assign E_o = wires_LI[V];
 
   // Instances
   
-  V_crossbar VCB0 (.clk(clk), .nres(nres), .prog_i(prog_i), .prog_shft(prog_shft), .prog_o(prog[0]),
-    .N_i(N_i[(V*62)+31:(V*62)]), .S_o(S_o[(V*62)+31:(V*62)]), .S_i(S_i[(V*34)+15:(V*34)]), .N_o(N_o[(V*34)+15:(V*34)]), .W_i(data_iCBV), .E_o(wires_LI[0]));
+  V_crossbar VCB0 (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s_in), .prog_s_out(prog_s[0]),
+    .N_i(N_i[(V*62)+31:(V*62)]), .S_o(S_o[(V*62)+31:(V*62)]), .S_i(S_i[(V*34)+15:(V*34)]), .N_o(N_o[(V*34)+15:(V*34)]), .W_i(W_i), .E_o(wires_LI[0]));
   genvar x;
   generate
     for(x = 0; x < V; x++)begin
-      logic_slice LS (.clk(clk), .nres(nres), .prog_i(prog[2*x]), .prog_shft(prog_shft), .prog_o(prog[2*x+1]),
+      logic_slice LS (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*x+0]), .prog_s_out(prog_s[2*x+1]),
+        .reg_nres(reg_nres), .reg_clk(reg_clk),
         .N_i(N_i[x*62+61:x*62+32]), .S_o(S_o[x*62+61:x*62+32]), .S_i(S_i[x*34+33:x*34+16]), .N_o(N_o[x*34+33:x*34+16]),
         .W_i(wires_LI[x]), .E_o(wires_LO[x]));
-      V_crossbar VCB (.clk(clk), .nres(nres), .prog_i(prog[2*x+1]), .prog_shft(prog_shft), .prog_o(prog[2*x+2]),
-        .N_i(N_i[x*63+31:x*63+0]), .S_o(S_o[x*63+31:x*63+0]), .S_i(S_i[x*35+15:x*35+0]), .N_o(N_o[x*35+15:x*35+0]),
+      V_crossbar VCB (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*x+1]), .prog_s_out(prog_s[2*x+2]),
+        .N_i(N_i[x*62+31:x*62+0]), .S_o(S_o[x*62+31:x*62+0]), .S_i(S_i[x*34+15:x*34+0]), .N_o(N_o[x*34+15:x*34+0]),
         .W_i(wires_LO[x]), .E_o(wires_LI[x+1]));
     end
   endgenerate

@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-//Test Logic Switch
+//Test Logic Slice
 module tb;
 
 

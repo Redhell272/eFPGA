@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-//Test Logic Module
+//Test Logic switch
 module testbench;
 
   reg [11:0] D='0;
