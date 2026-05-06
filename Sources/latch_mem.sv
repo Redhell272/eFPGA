@@ -92,23 +92,29 @@ module prog #(D, E) (
 );
   
   // Registers
-  reg [D-1:0] prog_D_sel;
-  reg [(D*8)-1:0] prog_D_line;
-  reg [(D*8)-1:0] prog_D_line_in;
-  reg [E-1:0] prog_en_line;
+  reg [D-1:0] D_sel;
+  reg [(D*8)-1:0] D_line;
+  reg [(D*8)-1:0] D_line_in;
+  reg [E:0] en_line;
   reg prog_shft;
   reg [1:0] prog_reset;
+  
+  // Wires
+  logic prog_en_sel;
+  logic prog_apply_sel;
 
   // Assigns
-  assign prog_s_out = prog_en_line[E-1];
+  assign prog_en_sel = prog_en && !prog_apply && (prog_s_in == 1 || en_line[E-1:0] != '0);
+  assign prog_s_out = en_line[E];
 
-  assign en = (prog_apply || prog_reset != 2'b00) ? prog_en_line : '0;
-  assign data = prog_D_line;
+  assign prog_apply_sel = (prog_apply && !prog_en) || prog_reset != 2'b00;
+  assign en = (prog_apply_sel) ? en_line : '0;
+  assign data = D_line;
   
   genvar x;
   generate
     for(x = 0; x < D; x++)begin
-      assign prog_D_line_in[((x+1)*8)-1:(x*8)] = (prog_en & prog_D_sel[x]) ? prog_D : prog_D_line[((x+1)*8)-1:(x*8)];
+      assign D_line_in[((x+1)*8)-1:(x*8)] = (prog_en_sel & D_sel[x]) ? prog_D : D_line[((x+1)*8)-1:(x*8)];
     end
   endgenerate
 
@@ -117,10 +123,10 @@ module prog #(D, E) (
   always @(posedge prog_clk or negedge prog_nres)
     begin
       if (prog_nres == 0) begin
-        prog_D_sel[0] <= 1'b1;
-        prog_D_sel[D-1:1] <= '0;
-        prog_D_line <= '0;
-        prog_en_line <= '0;
+        D_sel[0] <= 1'b1;
+        D_sel[D-1:1] <= '0;
+        D_line <= '0;
+        en_line <= '0;
         prog_shft <= 1'b1;
         prog_reset <= 2'b01;
       end else begin
@@ -128,24 +134,27 @@ module prog #(D, E) (
         if (prog_reset != 2'b00) begin
           prog_reset <= {prog_reset[0], 1'b0};
           if (prog_reset[0] == 1) begin
-            prog_en_line <= '1;
+            en_line <= '1;
           end else if (prog_reset[1] == 1) begin
-            prog_en_line <= '0;
+            en_line <= '0;
           end
 
-        end else if (prog_en == 1) begin
+        end else if (prog_en_sel == 1) begin
           prog_shft <= 1'b0;
-          prog_D_sel[0] <= prog_D_sel[D-1];
-          prog_D_sel[D-1:1] <= prog_D_sel[D-2:0];
-          prog_D_line <= prog_D_line_in;
+          D_sel[0] <= D_sel[D-1];
+          D_sel[D-1:1] <= D_sel[D-2:0];
+          D_line <= D_line_in;
           if (prog_shft == 1) begin
-            prog_en_line <= {prog_en_line[E-2:0], prog_s_in};
+            en_line <= {en_line[E-1:0], prog_s_in};
           end
+
+        end else if ((prog_en & prog_apply) == 1) begin
+          en_line <= {en_line[E-1:0], prog_s_in};
 
         end else begin
           prog_shft <= 1'b1;
-          if (prog_shft == 1 && prog_en_line[E-1] == 1) begin
-            prog_en_line <= '0;
+          if (prog_apply == 1 && en_line[E] == 1) begin
+            en_line <= '0;
           end
           
         end

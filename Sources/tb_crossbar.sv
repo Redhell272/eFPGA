@@ -6,7 +6,7 @@ module testbench;
   reg prog_nres=0;
   reg prog_clk=0;
   reg [7:0] prog_D='0;
-  reg [2:0] prog_en='0;
+  reg prog_en='0;
   reg prog_apply=0;
   reg prog_s_in=1;
   wire [2:0] prog_s_out;
@@ -34,7 +34,7 @@ module testbench;
     .prog_nres(prog_nres),
     .prog_clk(prog_clk),
     .prog_D(prog_D),
-    .prog_en(prog_en[0]),
+    .prog_en(prog_en),
     .prog_apply(prog_apply),
     .prog_s_in(prog_s_in),
     .prog_s_out(prog_s_out[0]),
@@ -52,7 +52,7 @@ module testbench;
     .prog_nres(prog_nres),
     .prog_clk(prog_clk),
     .prog_D(prog_D),
-    .prog_en(prog_en[1]),
+    .prog_en(prog_en),
     .prog_apply(prog_apply),
     .prog_s_in(prog_s_out[0]),
     .prog_s_out(prog_s_out[1]),
@@ -68,7 +68,7 @@ module testbench;
     .prog_nres(prog_nres),
     .prog_clk(prog_clk),
     .prog_D(prog_D),
-    .prog_en(prog_en[2]),
+    .prog_en(prog_en),
     .prog_apply(prog_apply),
     .prog_s_in(prog_s_out[1]),
     .prog_s_out(prog_s_out[2]),
@@ -85,39 +85,39 @@ module testbench;
   task load_prog_CB;
     input [55:0] D;
     begin
-      #10 prog_D=D[7:0]; prog_apply=0; prog_en[0]=1;
+      #10 prog_D=D[7:0]; prog_apply=0; prog_en=1;
       #10 prog_D=D[15:8];
       #10 prog_D=D[23:16];
       #10 prog_D=D[31:24];
       #10 prog_D=D[39:32];
       #10 prog_D=D[47:40];
       #10 prog_D=D[55:48];
-      #10 prog_apply=1; prog_en[0]=0;  prog_s_in=0;
+      #10 prog_apply=1; prog_en=0;  prog_s_in=0;
     end
   endtask
 
   task load_prog_CBV;
     input [31:0] D;
     begin
-      #10 prog_D=D[7:0]; prog_apply=0; prog_en[1]=1;
+      #10 prog_D=D[7:0]; prog_apply=0; prog_en=1;
       #10 prog_D=D[15:8];
       #10 prog_D=D[23:16];
       #10 prog_D=D[31:24];
-      #10 prog_apply=1; prog_en[1]=0;
+      #10 prog_apply=1; prog_en=0;
     end
   endtask
 
   task load_prog_CBH;
     input [55:0] D;
     begin
-      #10 prog_D=D[7:0]; prog_apply=0; prog_en[2]=1;
+      #10 prog_D=D[7:0]; prog_apply=0; prog_en=1;
       #10 prog_D=D[15:8];
       #10 prog_D=D[23:16];
       #10 prog_D=D[31:24];
       #10 prog_D=D[39:32];
       #10 prog_D=D[47:40];
       #10 prog_D=D[55:48];
-      #10 prog_apply=1; prog_en[2]=0;
+      #10 prog_apply=1; prog_en=0;
     end
   endtask
   
@@ -182,6 +182,9 @@ module testbench;
     load_prog_CB({7'h0, 16'h4000,1'h0,32'h00000000}); //47
     load_prog_CB({7'h0, 16'h8000,1'h0,32'h00000000}); //48
 
+    #10 prog_apply=1; prog_en=1;
+    #10 prog_apply=0; prog_en=0;
+
 
     load_prog_CBV({8'h01,8'h01,8'h01,8'h01}); //0
     load_prog_CBV({8'h02,8'h02,8'h02,8'h02}); //1
@@ -241,6 +244,9 @@ module testbench;
     load_prog_CBV({8'h20,8'h00,8'h00,8'h00}); //53
     load_prog_CBV({8'h40,8'h00,8'h00,8'h00}); //54
     load_prog_CBV({8'h80,8'h00,8'h00,8'h00}); //55
+
+    #10 prog_apply=1; prog_en=1;
+    #10 prog_apply=0; prog_en=0;
     
 
     load_prog_CBH({7'h00,16'h0001,1'b0,32'h00000000}); //0
@@ -294,7 +300,8 @@ module testbench;
     load_prog_CBH({7'h00,16'h0000,1'b0,32'h20000000}); //46
     load_prog_CBH({7'h00,16'h0000,1'b1,32'h10000000}); //47
 
-    #10 prog_apply=0;
+    #10 prog_apply=1; prog_en=1;
+    #10 prog_apply=0; prog_en=0;
   end
   
   //Clocks
