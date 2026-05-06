@@ -54,9 +54,9 @@ module crossbar (
   Ynodes_H #(.V(16))       Y_N0 (.D(data[32]), .E(en[15:0]), .H_i(Y_N[0]), .H_o(Y_N[1]));
   Ynodes_H #(.V(32))       Y_S0 (.D(data[32]), .E(en[48:17]), .H_i(Y_S[0]), .H_o(Y_S[1]));
 
-  Xnodes #(.V(16), .H(16)) X_SW (.D(data[55:40]), .E(en[15:0]), .V_i(S_i), .V_o(Y_N[0]), .H_i(Y_W[1]), .H_o(W_o));
-  Ynodes_V #(.H(16))       Y_W0 (.D(data[55:40]), .E(en[16]), .V_i(Y_W[0]), .V_o(Y_W[1]));
-  Xnodes #(.V(32), .H(16)) X_SE (.D(data[55:40]), .E(en[48:17]), .V_i(Y_S[1]), .V_o(S_o), .H_i(E_i), .H_o(Y_W[0]));
+  Xnodes #(.V(16), .H(16)) X_SW (.D(data[48:33]), .E(en[15:0]), .V_i(S_i), .V_o(Y_N[0]), .H_i(Y_W[1]), .H_o(W_o));
+  Ynodes_V #(.H(16))       Y_W0 (.D(data[48:33]), .E(en[16]), .V_i(Y_W[0]), .V_o(Y_W[1]));
+  Xnodes #(.V(32), .H(16)) X_SE (.D(data[48:33]), .E(en[48:17]), .V_i(Y_S[1]), .V_o(S_o), .H_i(E_i), .H_o(Y_W[0]));
 
 endmodule
 
