@@ -114,11 +114,9 @@ module Xnode (
   output wire O2
 );
 
-  wire prog;
+  logic prog;
   latch L0 (.D(D), .E(E), .O(prog));
-
-  assign O1 = prog ? I1 || I2 : I1;
-  assign O2 = prog ? I2 || I1 : I2;
+  pass C0 (.prog(prog), .I1(I1), .I2(I2), .O1(O1), .O2(O2));
   
 endmodule
 
@@ -132,10 +130,9 @@ module Ynode (
   output wire O
 );
 
-  wire prog;
+  logic prog;
   latch L0 (.D(D), .E(E), .O(prog));
-
-  assign O = prog ? I : 1'b0;
+  conn C0 (.prog(prog), .I(I), .O(O));
   
 endmodule
 
@@ -146,6 +143,38 @@ module Vnode (
   output wire O
 );
 
-  assign O = I;
+  buffer B0 (.I(I), .O(O));
+  
+endmodule
+
+
+
+// Array of latches
+module latches #(L) (
+  input wire [L-1:0] D,
+  input wire E,
+  output wire [L-1:0] O
+);
+
+  genvar x;
+  generate
+    for(x = 0; x < L; x++)begin
+      latch L0 (.D(D[x]), .E(E), .O(O[x]));
+    end
+  endgenerate
+  
+endmodule
+
+// Array of endpoints
+module endpoints #(L) (
+  output wire [L-1:0] O
+);
+
+  genvar x;
+  generate
+    for(x = 0; x < L; x++)begin
+      endpoint E0 (.O(O[x]));
+    end
+  endgenerate
   
 endmodule

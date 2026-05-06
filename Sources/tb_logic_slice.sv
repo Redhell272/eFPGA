@@ -3,25 +3,34 @@
 //Test Logic Switch
 module tb;
 
-  reg clk=1;
-  reg nres=0;
-  reg  [31:0] prog_i=32'h00000000;
-  reg 		  prog_shft=0;
-  wire [31:0] prog_o;
-  reg  [29:0] N_i=30'h00000000;
+
+  reg prog_nres=0;
+  reg prog_clk=0;
+  reg [7:0] prog_D='0;
+  reg prog_en='0;
+  reg prog_apply=0;
+  reg prog_s_in=1;
+  wire prog_s_out;
+  reg reg_nres=0;
+  reg reg_clk=0;
+  reg  [29:0] N_i=30'ha5a5a5a5;
   wire [29:0] S_o;
-  reg  [17:0] S_i=18'h1a5a5;
+  reg  [17:0] S_i=18'h5a5a5;
   wire [17:0] N_o;
-  reg  [31:0] W_i=32'h00000000;
+  reg  [23:0] W_i=24'h000000;
   wire  [7:0] E_o;
   
   // Instantiate Units Under Test
   logic_slice UUT(
-    .clk(clk),
-    .nres(nres),
-    .prog_i(prog_i),
-    .prog_shft(prog_shft),
-    .prog_o(prog_o),
+    .prog_nres(prog_nres),
+    .prog_clk(prog_clk),
+    .prog_D(prog_D),
+    .prog_en(prog_en),
+    .prog_apply(prog_apply),
+    .prog_s_in(prog_s_in),
+    .prog_s_out(prog_s_out),
+    .reg_nres(reg_nres),
+    .reg_clk(reg_clk),
     .N_i(N_i),
     .S_o(S_o),
     .S_i(S_i),
@@ -29,6 +38,18 @@ module tb;
     .W_i(W_i),
     .E_o(E_o)
   );
+
+  task load_prog_LS;
+    input [39:0] D;
+    begin
+      #10 prog_D=D[7:0]; prog_apply=0; prog_en=1;
+      #10 prog_D=D[15:8];
+      #10 prog_D=D[23:16];
+      #10 prog_D=D[31:24];
+      #10 prog_D=D[39:32];
+      #10 prog_apply=1; prog_en=0;  prog_s_in=0;
+    end
+  endtask
   
   
   
@@ -38,111 +59,90 @@ module tb;
     $dumpvars();
     
     //Testbench Inputs
-    #20 nres=1;
+    #20 prog_nres=1;
+    #40 prog_nres=1;
+    #20 reg_nres=1;
     
-    #15 prog_shft=1;
+    load_prog_LS({40'h0000000000}); //0
+    load_prog_LS({40'h0000000000}); //1
+    load_prog_LS({40'h0000000000}); //2
+    load_prog_LS({40'h0000000000}); //3
+    load_prog_LS({40'h0000000000}); //4
+    load_prog_LS({40'h0000000000}); //5
+    load_prog_LS({40'h0020100804}); //6
+    load_prog_LS({40'h0020100804}); //7
+    load_prog_LS({40'h0020100804}); //8
+    load_prog_LS({40'h0020100804}); //9
+    load_prog_LS({40'h0020100804}); //10
+    load_prog_LS({40'h0020100804}); //11
+    load_prog_LS({40'h1008040200}); //12
+    load_prog_LS({40'h1008040200}); //13
+    load_prog_LS({40'h1008040200}); //14
+    load_prog_LS({40'h1008040200}); //15
+    load_prog_LS({40'h1008040200}); //16
+    load_prog_LS({40'h1008040200}); //17
+    load_prog_LS({40'h1008040200}); //18
+    load_prog_LS({40'h1008040200}); //19
+    load_prog_LS({40'h1008040200}); //20
+    load_prog_LS({40'h1008040200}); //21
+    load_prog_LS({40'h0000000000}); //22
+    load_prog_LS({40'h0000000000}); //23
+    load_prog_LS({40'h0000000000}); //24
+    load_prog_LS({40'h0000000000}); //25
+    load_prog_LS({40'h0000000000}); //26
+    load_prog_LS({40'h0000000000}); //27
+    load_prog_LS({40'h0020100804}); //28
+    load_prog_LS({40'h0020100804}); //29
+    load_prog_LS({40'h0020100804}); //30
+    load_prog_LS({40'h0020100804}); //31
+    load_prog_LS({40'h0020100804}); //32
+    load_prog_LS({40'h0020100804}); //33
+    load_prog_LS({40'h1008040200}); //34
+    load_prog_LS({40'h1008040200}); //35
+    load_prog_LS({40'h1008040200}); //36
+    load_prog_LS({40'h1008040200}); //37
+    load_prog_LS({40'h1008040200}); //38
+    load_prog_LS({40'h1008040200}); //39
+    load_prog_LS({40'h1008040200}); //40
+    load_prog_LS({40'h1008040200}); //41
+    load_prog_LS({40'h1008040200}); //42
+    load_prog_LS({40'h1008040200}); //43
+    load_prog_LS({40'h0000000000}); //44
+    load_prog_LS({40'h0000000000}); //45
+    load_prog_LS({40'h0000000000}); //46
+    load_prog_LS({40'h0000000000}); //47
+    load_prog_LS({40'h0000000000}); //48
+    load_prog_LS({40'h0000000000}); //49
+    load_prog_LS({40'h0020100804}); //50
+    load_prog_LS({40'h0020100804}); //51
+    load_prog_LS({40'h0020100804}); //52
+    load_prog_LS({40'h0020100804}); //53
+    load_prog_LS({40'h0020100804}); //54
+    load_prog_LS({40'h0020100804}); //55
+    load_prog_LS({40'h1008040200}); //56
+    load_prog_LS({40'h1008040200}); //57
+    load_prog_LS({40'h1008040200}); //58
+    load_prog_LS({40'h1008040200}); //59
+    load_prog_LS({40'h1008040200}); //60
+    load_prog_LS({40'h1008040200}); //61
+    load_prog_LS({40'h1008040200}); //62
+    load_prog_LS({40'h1008040200}); //63
+    load_prog_LS({40'h1008040200}); //64
+    load_prog_LS({40'h1008040200}); //65
+    load_prog_LS({40'h0000000000}); //66
+    load_prog_LS({40'h0000000000}); //67
+    load_prog_LS({40'h0000000000}); //68
+    load_prog_LS({40'h0000000000}); //69
 
-    //Ynodes
-        prog_i=32'hFFFFFFFF;
-    #10 prog_i=32'hFFFFFFFF;
-    #10 prog_i=32'hFFFFFFFF;
-    #10 prog_i=32'hFFFFFFFF;
-    #10 prog_i=32'hFFFFFFFF;
-    #10 prog_i=32'hFFFFFFFF;
+    #10 prog_apply=0;
 
-    //Xnodes
-    #10 prog_i=32'h00003C3C;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h000C0003;
-    #10 prog_i=32'h00003C3C;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h000C0003;
-    #10 prog_i=32'h00003C3C;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h000C0003;
-    #10 prog_i=32'h00003C3C;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h000C0003;
-    #10 prog_i=32'h00003C3C;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h000C0003;
-    #10 prog_i=32'h00003C3C;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h000C0003;
-    #10 prog_i=32'h00003C3C;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h000C0003;
-    #10 prog_i=32'h00003C3C;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h000C0003;
-    #10 prog_i=32'h00003C3C;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h000C0003;
-    #10 prog_i=32'h00003C3C;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h000C0003;
-    #10 prog_i=32'h00003C3C;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h000C0003;
-    #10 prog_i=32'h00003C3C;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h00000000;
-    #10 prog_i=32'h000C0003;
-
-    //Regs
-    #10 prog_i=32'hFFFFFFFF;
-
-    //LUT
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    #10 prog_i=32'h3C3C3C3C;
-    
-    #10 prog_shft=0;
-
-    #20 N_i=30'h00300C03;
-
-    #10 N_i=30'h00F03C0F;
-    #10 N_i=30'h00300C03;
-    #10 N_i=30'h00F03C0F;
-    #10 N_i=30'h00300C03;
-    #10 N_i=30'h00F03C0F;
-    #10 N_i=30'h00300C03;
+    #400 N_i=30'h00300C03;
+    #400 N_i=30'h00F03C0F;
+    #400 N_i=30'h00300C03;
+    #400 N_i=30'h00F03C0F;
+    #400 N_i=30'h00300C03;
+    #400 N_i=30'h00F03C0F;
+    #400 N_i=30'h00000000;
     
     
     
@@ -150,10 +150,13 @@ module tb;
   
   //Clocks
   always
-    #5 clk = ~clk;   // 100 Mhz clock
+    #5 prog_clk = ~prog_clk;   // 100 Mhz clock
+
+  always
+    #5 reg_clk = ~reg_clk;   // 100 Mhz clock
   
   //Simulation Runtime
   initial
-    #1000 $finish;
+    #8000 $finish;
   
 endmodule

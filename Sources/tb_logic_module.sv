@@ -3,9 +3,8 @@
 //Test Logic Module
 module testbench;
 
-  reg prog_clk=1;
-  reg prog_nres=0;
-  reg[33:0] prog_in=34'h23ACA3ACA;
+  reg [8:0] D='0;
+  reg [3:0] E='0;
   reg reg_clk=1;
   reg reg_nres=0;
   reg reg_in=0;
@@ -14,12 +13,34 @@ module testbench;
   
   // Instantiate Unit Under Test
   logic_module UUT(
-    .prog(prog_in),
+    .D(D),
+    .E(E),
     .reg_clk(reg_clk),
     .reg_nres(reg_nres),
     .reg_in(reg_in),
     .data_in(data_in),
     .data_out(data_out));
+
+  task load_prog;
+    input [33:0] prog;
+    begin
+      #10 E = 4'b0000;
+      #10 D = {prog[32], prog[7:0]};
+      #10 E = 4'b0001;
+      #10 E = 4'b0000;
+      #10 D = {prog[33], prog[15:8]};
+      #10 E = 4'b0010;
+      #10 E = 4'b0000;
+      #10 D = {1'b0, prog[23:16]};
+      #10 E = 4'b0100;
+      #10 E = 4'b0000;
+      #10 D = {1'b0, prog[31:24]};
+      #10 E = 4'b1000;
+      
+      #10 E = '0;
+      #10 D = '0;
+    end
+  endtask 
   
   
   
@@ -29,7 +50,7 @@ module testbench;
     $dumpvars();
     
     //Testbench Inputs
-    #20 prog_nres=1;
+    load_prog(34'h23ACA3ACA);
     #20 reg_nres=1;
     
     #10 data_in=5'h00;
@@ -68,8 +89,6 @@ module testbench;
   end
   
   //Clocks
-  always
-    #5 prog_clk = ~prog_clk;   // 100 Mhz clock
   always
     #5 reg_clk = ~reg_clk;     // 100 Mhz clock
   

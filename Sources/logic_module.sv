@@ -2,71 +2,40 @@
 
 // Logic Slice Module of 16x Logic Modules and 12x Logic Switches
 module logic_slice (
-  //Global Clock/Reset
-  input wire 	 	     clk,
-  input wire      	 nres,
   //Programming Interface
-  input wire  [31:0] prog_i,
-  input wire		     prog_shft,
-  output wire [31:0] prog_o,
+  input wire         prog_nres,
+  input wire         prog_clk,
+  input wire   [7:0] prog_D,
+  input wire         prog_en,
+  input wire         prog_apply,
+  input wire         prog_s_in,
+  output wire        prog_s_out,
+  //Register Inputs
+  input wire         reg_nres,
+  input wire         reg_clk,
   //Module In/Out
   input wire  [29:0] N_i,
   output wire [29:0] S_o,
   input wire  [17:0] S_i,
   output wire [17:0] N_o,
-  input wire  [31:0] W_i,
+  input wire  [23:0] W_i,
   output wire  [7:0] E_o
 );
   //  Programming Logic
-  //set length of programming by number of 32bit regs:
-  parameter l=83;
-  
-  reg [31:0] prog[l-1:0];
-  assign prog_o = prog[l-1];
+  wire [69:0] en;
+  wire [39:0] data;
+  prog #(.D(5), .E(70)) Prog0 (
+    .prog_nres(prog_nres),
+    .prog_clk(prog_clk),
+    .prog_D(prog_D),
+    .prog_en(prog_en),
+    .prog_apply(prog_apply),
+    .prog_s_in(prog_s_in),
+    .prog_s_out(prog_s_out),
+    .en(en),
+    .data(data)
+  );
 
-  //Shifting Registers
-  integer i;
-  always @(posedge clk or negedge nres)
-    begin
-      if (nres == 0) begin
-        for (i = 0; i < l; i++) begin
-          prog[i] <= 32'h00000000;
-        end
-      end else begin
-        if (prog_shft == 1) begin
-          prog[0] <= prog_i;
-          for (i = 1; i < l; i++) begin
-            prog[i] <= prog[i-1];
-          end
-        end
-      end
-    end
-  
-  //Fetch Programming Regions from Shifting Registers
-  logic  [511:0] LUT_prog;
-  logic   [31:0] REG_prog;
-  logic [1919:0] X_prog;
-  logic  [191:0] Y_prog;
-  logic   [33:0] LM_prog[15:0];
-  logic  [175:0] LS_prog[11:0];
-  
-  assign REG_prog = (prog_shft == 0) ? prog[16] : 'Z;
-  assign Y_prog = (prog_shft == 0) ? {prog[82], prog[81], prog[80], prog[79], prog[78], prog[77]} : 'Z;
-  genvar x;
-  generate
-    for(x = 0; x < 16; x++)begin
-      assign LUT_prog[x*32+31:x*32] = (prog_shft == 0) ? prog[x] : 'Z;
-    end
-    for(x = 0; x < 60; x++)begin
-      assign X_prog[32*x+31:32*x] = (prog_shft == 0) ? prog[x+17] : 'Z;
-    end
-    for(x = 0; x < 16; x++)begin
-      assign LM_prog[x] = (prog_shft == 0) ? {REG_prog[x*2+1:x*2], LUT_prog[x*32+31:x*32]} : 'Z;
-    end
-    for(x = 0; x < 12; x++)begin
-      assign LS_prog[x] = (prog_shft == 0) ? {Y_prog[x*16+15:x*16], X_prog[x*160+159:x*160]} : 'Z;
-    end
-  endgenerate
   
   
   //  Module Logic
@@ -74,28 +43,22 @@ module logic_slice (
   // Wires
   
   logic [7:0] Lo[3:0];
-  logic [31:0] Li[3:0];
+  logic [23:0] Li[3:0];
   logic [17:0] wires_U[4:0];
   logic [29:0] wires_D[4:0];
 
   // Instances
   
+  genvar x;
   generate
     for(x = 0; x < 4; x++)begin
-      logic_module LM0 (.nres(nres && !(prog_shft)), .prog(LM_prog[x*4]),   .data_out(Lo[0][x*2+1:x*2]),
-                                                                            .data_in(Li[0][x*8+4:x*8]), .reg_in(Li[0][x*8+5]), .reg_clk(Li[0][x*8+6]), .reg_nres(Li[0][x*8+7]));
-      logic_switch LS0                              (.prog(LS_prog[x*3]),   .data_in(Li[0][x*8+4:x*8]), .reg_in(Li[0][x*8+5]), .reg_clk(Li[0][x*8+6]), .reg_nres(Li[0][x*8+7]),
-                                                                            .data_out(Lo[1][x*2+1:x*2]), .up_out(wires_U[x][5:0]), .down_in(wires_D[x][9:0]), .up_in(wires_U[x+1][5:0]), .down_out(wires_D[x+1][9:0]));
-      logic_module LM1 (.nres(nres && !(prog_shft)), .prog(LM_prog[x*4+1]), .data_out(Lo[1][x*2+1:x*2]),
-                                                                            .data_in(Li[1][x*8+4:x*8]), .reg_in(Li[1][x*8+5]), .reg_clk(Li[1][x*8+6]), .reg_nres(Li[1][x*8+7]));
-      logic_switch LS1                              (.prog(LS_prog[x*3+1]), .data_in(Li[1][x*8+4:x*8]), .reg_in(Li[1][x*8+5]), .reg_clk(Li[1][x*8+6]), .reg_nres(Li[1][x*8+7]),
-                                                                            .data_out(Lo[2][x*2+1:x*2]), .up_out(wires_U[x][11:6]), .down_in(wires_D[x][19:10]), .up_in(wires_U[x+1][11:6]), .down_out(wires_D[x+1][19:10]));
-      logic_module LM2 (.nres(nres && !(prog_shft)), .prog(LM_prog[x*4+2]), .data_out(Lo[2][x*2+1:x*2]),
-                                                                            .data_in(Li[2][x*8+4:x*8]), .reg_in(Li[2][x*8+5]), .reg_clk(Li[2][x*8+6]), .reg_nres(Li[2][x*8+7]));
-      logic_switch LS2                              (.prog(LS_prog[x*3+2]), .data_in(Li[2][x*8+4:x*8]), .reg_in(Li[2][x*8+5]), .reg_clk(Li[2][x*8+6]), .reg_nres(Li[2][x*8+7]),
-                                                                            .data_out(Lo[3][x*2+1:x*2]), .up_out(wires_U[x][17:12]), .down_in(wires_D[x][29:20]), .up_in(wires_U[x+1][17:12]), .down_out(wires_D[x+1][29:20]));
-      logic_module LM3 (.nres(nres && !(prog_shft)), .prog(LM_prog[x*4+3]), .data_out(Lo[3][x*2+1:x*2]),
-                                                                            .data_in(Li[3][x*8+4:x*8]), .reg_in(Li[3][x*8+5]), .reg_clk(Li[3][x*8+6]), .reg_nres(Li[3][x*8+7]));
+      logic_module LM0 (.D(data[x*9+11:x*9+3]), .E(en[3:0]),   .data_out(Lo[0][x*2+1:x*2]), .data_in(Li[0][x*6+4:x*6]), .reg_in(Li[0][x*6+5]), .reg_nres(reg_nres), .reg_clk(reg_clk));
+      logic_switch LS0 (.D(data[x*9+11:x*9+0]), .E(en[21:4]),   .data_in(Li[0][x*6+5:x*6]), .data_out(Lo[1][x*2+1:x*2]), .up_out(wires_U[x][5:0]), .down_in(wires_D[x][9:0]), .up_in(wires_U[x+1][5:0]), .down_out(wires_D[x+1][9:0]));
+      logic_module LM1 (.D(data[x*9+11:x*9+3]), .E(en[25:22]), .data_out(Lo[1][x*2+1:x*2]), .data_in(Li[1][x*6+4:x*6]), .reg_in(Li[1][x*6+5]), .reg_nres(reg_nres), .reg_clk(reg_clk));
+      logic_switch LS1 (.D(data[x*9+11:x*9+0]), .E(en[43:26]),  .data_in(Li[1][x*6+5:x*6]), .data_out(Lo[2][x*2+1:x*2]), .up_out(wires_U[x][11:6]), .down_in(wires_D[x][19:10]), .up_in(wires_U[x+1][11:6]), .down_out(wires_D[x+1][19:10]));
+      logic_module LM2 (.D(data[x*9+11:x*9+3]), .E(en[47:44]), .data_out(Lo[2][x*2+1:x*2]), .data_in(Li[2][x*6+4:x*6]), .reg_in(Li[2][x*6+5]), .reg_nres(reg_nres), .reg_clk(reg_clk));
+      logic_switch LS2 (.D(data[x*9+11:x*9+0]), .E(en[65:48]),  .data_in(Li[2][x*6+5:x*6]), .data_out(Lo[3][x*2+1:x*2]), .up_out(wires_U[x][17:12]), .down_in(wires_D[x][29:20]), .up_in(wires_U[x+1][17:12]), .down_out(wires_D[x+1][29:20]));
+      logic_module LM3 (.D(data[x*9+11:x*9+3]), .E(en[69:66]), .data_out(Lo[3][x*2+1:x*2]), .data_in(Li[3][x*6+4:x*6]), .reg_in(Li[3][x*6+5]), .reg_nres(reg_nres), .reg_clk(reg_clk));
     end
   endgenerate
 
@@ -116,12 +79,12 @@ endmodule
 // 5in-LUT Module with a register
 module logic_module (
   //Programming Input
-  input wire nres,
-  input wire [33:0] prog,
+  input wire [8:0] D,
+  input wire [3:0] E,
   //Register Inputs
-  input wire reg_in,
-  input wire reg_clk,
   input wire reg_nres,
+  input wire reg_clk,
+  input wire reg_in,
   //LUT Module In/Out
   input wire [4:0] data_in,
   output wire [1:0] data_out
@@ -132,6 +95,11 @@ module logic_module (
   reg Reg;
   
   // Wires
+
+  logic [8:0] latch_O0;
+  logic [8:0] latch_O1;
+  logic [7:0] latch_O2;
+  logic [7:0] latch_O3;
   
   logic [31:0] LUT_prog;
   logic reg_prog;
@@ -141,24 +109,25 @@ module logic_module (
 
   // Assigns
   
-  assign LUT_prog = prog[31:0];
-  assign reg_prog = prog[32];
-  assign rst_prog = prog[33];
+  assign LUT_prog = {latch_O3, latch_O2, latch_O1[7:0], latch_O0[7:0]};
+  assign reg_prog = latch_O0[8];
+  assign rst_prog = latch_O1[8];
   
   assign data_out = {LUT_out, Reg};
 
   // Instances
-
+  latches #(.L(9)) L0 (.D(D[8:0]), .E(E[0]), .O(latch_O0));
+  latches #(.L(9)) L1 (.D(D[8:0]), .E(E[1]), .O(latch_O1));
+  latches #(.L(8)) L2 (.D(D[7:0]), .E(E[2]), .O(latch_O2));
+  latches #(.L(8)) L3 (.D(D[7:0]), .E(E[3]), .O(latch_O3));
   // Processes
   
   //------------------------------- Sequential ------------------------------
  
   //LUT Register
-  always @(posedge reg_clk or negedge reg_nres or negedge nres )
+  always @(posedge reg_clk or negedge reg_nres)
     begin
-      if (nres == 0)
-        Reg <= 1'b0;
-      else if (reg_nres == 0)
+      if (reg_nres == 0)
         Reg <= rst_prog;
       else
         Reg <= reg_prog ? reg_in : LUT_out;
@@ -215,14 +184,11 @@ endmodule
 // Switch Module to place between Logic Modules
 module logic_switch (
   //Programming Input
-  input wire [175:0] prog,
-  //Register Inputs
-  output wire reg_in,
-  output wire reg_clk,
-  output wire reg_nres,
+  input wire [11:0] D,
+  input wire [17:0] E,
   //Logic Module In/Out
   input wire [1:0] data_out,
-  output wire [4:0] data_in,
+  output wire [5:0] data_in,
   //Interconnect Wires
   output wire [5:0] up_out,
   input wire [9:0] down_in,
@@ -230,107 +196,32 @@ module logic_switch (
   output wire [9:0] down_out
 );
   
-  // Registers
-  
   // Wires
+  logic [5:0] D_F;
+  logic [5:0] X_W[4:0];
+  logic [5:0] Y_N[1:0];
+  logic [9:0] Y_S[1:0];
   
-  logic  [5:0] y_prog_up;
-  logic  [9:0] y_prog_down;
-  logic  [1:0] out_prog_up[1:0];
-  logic  [5:0] out_prog_down[1:0];
-  logic  [1:0] out_prog_right[7:0];
-  logic  [5:0] in_prog_up[7:0];
-  logic  [9:0] in_prog_down[7:0];
-  
-  logic  [5:0] y_up;
-  logic  [9:0] y_down;
-  logic  [7:0] out_H[2:0];
-  
-  logic  [18:0] wiresH[7:0];
-  logic  [15:0] wiresV[8:0];
-  
-  // Assigns
-  
-  assign y_prog_up = prog[175:170];
-  assign y_prog_down = prog[169:160];
+  // Flip wires around X_U0 block to keep all connections grid aligned
   genvar x;
   generate
-    for(x = 0; x < 2; x++)begin
-      assign out_prog_up[x] = prog[159-2*x:158-2*x];
-      assign out_prog_down[x] = prog[155-6*x:150-6*x];
-    end
-    for(x = 0; x < 8; x++)begin
-      
-      assign out_prog_right[x] = prog[143-2*x:142-2*x];
-      assign in_prog_up[x] = prog[127-16*x:122-16*x];
-      assign in_prog_down[x] = prog[121-16*x:112-16*x];
+    for(x = 0; x < 6; x++) begin
+      assign D_F[x] = D[8-x];
+      assign X_W[2][x] = X_W[1][5-x];
+      assign X_W[4][x] = X_W[3][5-x];
     end
   endgenerate
-  
-  //Connect wires with different labels and in/outputs
-  assign wiresV[0][9:0] = down_in;
-  assign up_out = wiresV[0][15:10];
-  assign wiresV[8][15:10] = {y_up[5:2], out_H[0][7:6]};
-  assign out_H[0][5:0] = wiresV[8][9:4];
-
-  assign out_H[2][7:6] = y_up[1:0];
-  assign y_down[9:4] = out_H[2][5:0];
-  assign y_down[3:0] = wiresV[8][3:0];
-  
-  assign data_in = {wiresH[4][0], wiresH[3][0], wiresH[2][0], wiresH[1][0], wiresH[0][0]};
-  assign reg_in = wiresH[5][0];
-  assign reg_clk = wiresH[6][0];
-  assign reg_nres = wiresH[7][0];
-
-  assign wiresH[0][18] = 1'b0;
-  assign wiresH[1][18] = 1'b0;
-  assign wiresH[2][18] = 1'b0;
-  assign wiresH[3][18] = 1'b0;
-  assign wiresH[4][18] = 1'b0;
-  assign wiresH[5][18] = 1'b0;
-  assign wiresH[6][18] = 1'b0;
-  assign wiresH[7][18] = 1'b0;
 
   // Instances
-  
-  genvar y;
-  generate
-    //Y Up
-    for(x = 0; x < 6; x++)begin
-      Ynode Yu0 (.prog(y_prog_up[x]), .I(up_in[x]), .O(y_up[x]));
-    end
-    //Y down
-    for(x = 0; x < 10; x++)begin
-      Ynode Yd0 (.prog(y_prog_down[x]), .I(y_down[x]), .O(down_out[x]));
-    end
-    for(x = 0; x < 2; x++)begin
-      //Out Short
-      XnodeSW XoU0 (.prog(out_prog_up[1-x][1]), .N(out_H[x][7]), .E(), .S(out_H[x+1][7]), .W(data_out[x]));
-      XnodeSW XoU1 (.prog(out_prog_up[1-x][0]), .N(out_H[x][6]), .E(), .S(out_H[x+1][6]), .W(data_out[x]));
-      for(y = 0; y < 6; y++)begin
-        Xnode XoD0 (.prog(out_prog_down[1-x][y]), .N(out_H[x][y]), .E(), .S(out_H[x+1][y]), .W(data_out[x]));
-      end
-      //Out Direct
-      for(y = 0; y < 8; y++)begin
-        XnodeSW XoR0 (.prog(out_prog_right[y][1-x]), .N(), .E(wiresH[y][x+16]), .S(data_out[x]), .W(wiresH[y][x+17]));
-      end
-    end
-    for(x = 0; x < 8; x++)begin
-      //In Down
-      for(y = 0; y < 10; y++)begin
-        Xnode XiD0 (.prog(in_prog_down[x][y]), .N(wiresV[x][y]), .E(wiresH[x][y]), .S(wiresV[x+1][y]), .W(wiresH[x][y+1]));
-      end
-      //In Up
-      for(y = 0; y < 6; y++)begin
-        XnodeSW XiU0 (.prog(in_prog_up[x][y]), .N(wiresV[x][y+10]), .E(wiresH[x][y+10]), .S(wiresV[x+1][y+10]), .W(wiresH[x][y+11]));
-      end
-    end
-  endgenerate
+  endpoints #(.L(6))       EP0 (.O(X_W[0]));
+  Xnodes #(.V(2), .H(6))  X_L0 (.D(D[8:3]), .E(E[1:0]),       .V_i(data_out), .V_o(),  .H_i(X_W[0]), .H_o(X_W[1]));
 
-  // Processes
-  
-  //------------------------------- Sequential ------------------------------
+  Xnodes #(.V(6), .H(2))  X_U0 (.D({D[0], D[1]}), .E(E[7:2]), .V_i(Y_N[1]), .V_o(up_out), .H_i({data_out[0], data_out[1]}), .H_o());
+  Ynodes_H #(.V(6))       Y_U0 (.D(D[2]), .E(E[7:2]),         .H_i(Y_N[0]), .H_o(Y_N[1]));
+  Xnodes #(.V(6), .H(6))  X_U1 (.D(D_F), .E(E[7:2]),          .V_i(up_in), .V_o(Y_N[0]), .H_i(X_W[2]), .H_o(X_W[3]));
 
-  //----------------------------- Combinational -----------------------------
+  Xnodes #(.V(10), .H(6)) X_D1 (.D(D[8:3]), .E(E[17:8]),      .V_i(down_in), .V_o(Y_S[0]), .H_i(X_W[4]), .H_o(data_in));
+  Ynodes_H #(.V(10))      Y_D0 (.D(D[9]), .E(E[17:8]),        .H_i(Y_S[0]), .H_o(Y_S[1]));
+  Xnodes #(.V(10), .H(2)) X_D0 (.D(D[11:10]), .E(E[17:8]),    .V_i(Y_S[1]), .V_o(down_out), .H_i(data_out), .H_o());
   
 endmodule
