@@ -1,11 +1,10 @@
 `timescale 1ns/1ps
 
-//Define eFPGA dimensions
-`define V 3
-`define H 2
-
 // eFPGA Wrapper Top Module
-module eFPGA_blank (
+module eFPGA_blank #(
+  parameter int V = 3,
+  parameter int H = 2
+) (
   //Programming Interface
   input wire         prog_nres,
   input wire         prog_clk,
