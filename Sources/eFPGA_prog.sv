@@ -40,6 +40,7 @@ module eFPGA_prog #(V, H, W) (
   reg   [1:0] data_sel;
   
   // Wires
+  logic         cnt;
   logic   [1:0] state;
   logic   [5:0] data_num;
   logic   [7:0] en_num;
@@ -50,6 +51,8 @@ module eFPGA_prog #(V, H, W) (
   logic [2*H:0] prog_s;
   
   // Assigns
+  assign cnt = row_cnt != 0 || col_cnt != 0 || en_cnt != 0 || data_cnt != 0;
+
   assign state = {row_cnt[0], col_cnt[0]};
 
   assign en_num =   (state == 2'b00) ? 8'h31 :       // CLINE CB State
@@ -110,7 +113,7 @@ module eFPGA_prog #(V, H, W) (
         prog_s_shft <= '0;
         prog_s_strobe <= 0;
       end else begin
-        if (row_cnt != 0 || col_cnt != 0 || en_cnt != 0 || data_cnt != 0) begin
+        if (cnt) begin
           if (data_cnt == data_num) begin
             data_cnt <= 0;
             prog_s_strobe <= 0;
@@ -142,7 +145,7 @@ module eFPGA_prog #(V, H, W) (
           prog_s_shft <= {prog_s_shft[2*H-1:0], 1'b1};
           prog_s_strobe <= 1;
         end else begin
-          prog_s_strobe <= 1;
+          prog_s_strobe <= 0;
         end
       end
     end
@@ -155,9 +158,9 @@ module eFPGA_prog #(V, H, W) (
         data <= '0;
         data_sel <= 0;
       end else begin
-        if (prog_start_RE[0] == 1 && addr_cnt == 0) begin
+        if (prog_start_RE[0] == 1 && !cnt) begin
           data_sel <= 2'b11;
-        end else if ((addr_cnt != 0 || data_sel != 2'b00) && (prog_en == 1'b1 && prog_apply == 1'b0)) begin
+        end else if (cnt && (prog_en == 1'b1 && prog_apply == 1'b0)) begin
           data_sel <= data_sel + 1;
           if (data_sel == 2'b11) begin
             addr_cnt <= addr_cnt + 1;
