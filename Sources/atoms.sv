@@ -1,5 +1,28 @@
 `timescale 1ns/1ps
 
+//Register
+module register (
+  input wire clk,
+  input wire nres,
+  input wire nres_prog,
+  input wire D,
+  output wire O
+);
+  reg Reg;
+  assign O = Reg;
+
+  always @(posedge clk or negedge nres)
+    begin
+      if (nres == 0)
+        Reg <= nres_prog;
+      else
+        Reg <= D;
+    end
+  
+endmodule
+
+
+
 //Latch
 module latch (
   input wire D,
@@ -10,12 +33,26 @@ module latch (
   reg i;
   assign O = i;
 
-  always @(E)
+  always @(E, D)
     begin
       if (E == 1) 
         i <= D;
     end
 
+endmodule
+
+
+
+//Mux
+module mux (
+  input wire S,
+  input wire I0,
+  input wire I1,
+  output wire O
+);
+
+  assign O = S ? I1 : I0;
+  
 endmodule
 
 

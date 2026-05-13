@@ -104,7 +104,14 @@ module logic_module (
   logic [31:0] LUT_prog;
   logic reg_prog;
   logic rst_prog;
+
+  logic register_in;
+  logic register_out;
   
+  logic [15:0] LUT_L1;
+  logic [7:0] LUT_L2;
+  logic [3:0] LUT_L3;
+  logic [1:0] LUT_L4;
   logic LUT_out;
 
   // Assigns
@@ -113,67 +120,34 @@ module logic_module (
   assign reg_prog = latch_O0[8];
   assign rst_prog = latch_O1[8];
   
-  assign data_out = {LUT_out, Reg};
+  assign data_out = {LUT_out, register_out};
 
   // Instances
   latches #(.L(9)) L0 (.D(D[8:0]), .E(E[0]), .O(latch_O0));
   latches #(.L(9)) L1 (.D(D[8:0]), .E(E[1]), .O(latch_O1));
   latches #(.L(8)) L2 (.D(D[7:0]), .E(E[2]), .O(latch_O2));
   latches #(.L(8)) L3 (.D(D[7:0]), .E(E[3]), .O(latch_O3));
-  // Processes
-  
-  //------------------------------- Sequential ------------------------------
- 
-  //LUT Register
-  always @(posedge reg_clk or negedge reg_nres)
-    begin
-      if (reg_nres == 0)
-        Reg <= rst_prog;
-      else
-        Reg <= reg_prog ? reg_in : LUT_out;
-    end
 
-  //----------------------------- Combinational -----------------------------
-  
-  //LUT Process
-  always @(data_in or LUT_prog)
-    begin
-      case (data_in)
-        5'b00000 : LUT_out <= LUT_prog[0];
-        5'b00001 : LUT_out <= LUT_prog[1];
-        5'b00010 : LUT_out <= LUT_prog[2];
-        5'b00011 : LUT_out <= LUT_prog[3];
-        5'b00100 : LUT_out <= LUT_prog[4];
-        5'b00101 : LUT_out <= LUT_prog[5];
-        5'b00110 : LUT_out <= LUT_prog[6];
-        5'b00111 : LUT_out <= LUT_prog[7];
-        5'b01000 : LUT_out <= LUT_prog[8];
-        5'b01001 : LUT_out <= LUT_prog[9];
-        5'b01010 : LUT_out <= LUT_prog[10];
-        5'b01011 : LUT_out <= LUT_prog[11];
-        5'b01100 : LUT_out <= LUT_prog[12];
-        5'b01101 : LUT_out <= LUT_prog[13];
-        5'b01110 : LUT_out <= LUT_prog[14];
-        5'b01111 : LUT_out <= LUT_prog[15];
-        5'b10000 : LUT_out <= LUT_prog[16];
-        5'b10001 : LUT_out <= LUT_prog[17];
-        5'b10010 : LUT_out <= LUT_prog[18];
-        5'b10011 : LUT_out <= LUT_prog[19];
-        5'b10100 : LUT_out <= LUT_prog[20];
-        5'b10101 : LUT_out <= LUT_prog[21];
-        5'b10110 : LUT_out <= LUT_prog[22];
-        5'b10111 : LUT_out <= LUT_prog[23];
-        5'b11000 : LUT_out <= LUT_prog[24];
-        5'b11001 : LUT_out <= LUT_prog[25];
-        5'b11010 : LUT_out <= LUT_prog[26];
-        5'b11011 : LUT_out <= LUT_prog[27];
-        5'b11100 : LUT_out <= LUT_prog[28];
-        5'b11101 : LUT_out <= LUT_prog[29];
-        5'b11110 : LUT_out <= LUT_prog[30];
-        5'b11111 : LUT_out <= LUT_prog[31];
-        default  : LUT_out <= 5'bZZZZZ;
-      endcase
+  mux MR0 (.S(reg_prog), .I0(LUT_out), .I1(reg_in), .O(register_in));
+  register R0 (.clk(reg_clk), .nres(reg_nres), .nres_prog(rst_prog), .D(register_in), .O(register_out));
+
+  genvar x;
+  generate
+    for(x = 0; x < 16; x++)begin
+      mux ML1 (.S(data_in[0]), .I0(LUT_prog[2*x+0]), .I1(LUT_prog[2*x+1]), .O(LUT_L1[x]));
     end
+    for(x = 0; x < 8; x++)begin
+      mux ML2 (.S(data_in[1]), .I0(LUT_L1[2*x+0]), .I1(LUT_L1[2*x+1]), .O(LUT_L2[x]));
+    end
+    for(x = 0; x < 4; x++)begin
+      mux ML3 (.S(data_in[2]), .I0(LUT_L2[2*x+0]), .I1(LUT_L2[2*x+1]), .O(LUT_L3[x]));
+    end
+    for(x = 0; x < 2; x++)begin
+      mux ML4 (.S(data_in[3]), .I0(LUT_L3[2*x+0]), .I1(LUT_L3[2*x+1]), .O(LUT_L4[x]));
+    end
+  endgenerate
+
+  mux ML5 (.S(data_in[4]), .I0(LUT_L4[0]), .I1(LUT_L4[1]), .O(LUT_out));
   
 endmodule
 
