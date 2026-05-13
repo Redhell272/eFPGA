@@ -107,11 +107,7 @@ module logic_module (
 
   logic register_in;
   logic register_out;
-  
-  logic [15:0] LUT_L1;
-  logic [7:0] LUT_L2;
-  logic [3:0] LUT_L3;
-  logic [1:0] LUT_L4;
+
   logic LUT_out;
 
   // Assigns
@@ -120,7 +116,7 @@ module logic_module (
   assign reg_prog = latch_O0[8];
   assign rst_prog = latch_O1[8];
   
-  assign data_out = {LUT_out, register_out};
+  assign data_out = {register_out, LUT_out};
 
   // Instances
   latches #(.L(9)) L0 (.D(D[8:0]), .E(E[0]), .O(latch_O0));
@@ -128,26 +124,9 @@ module logic_module (
   latches #(.L(8)) L2 (.D(D[7:0]), .E(E[2]), .O(latch_O2));
   latches #(.L(8)) L3 (.D(D[7:0]), .E(E[3]), .O(latch_O3));
 
-  mux MR0 (.S(reg_prog), .I0(LUT_out), .I1(reg_in), .O(register_in));
-  register R0 (.clk(reg_clk), .nres(reg_nres), .nres_prog(rst_prog), .D(register_in), .O(register_out));
-
-  genvar x;
-  generate
-    for(x = 0; x < 16; x++)begin
-      mux ML1 (.S(data_in[0]), .I0(LUT_prog[2*x+0]), .I1(LUT_prog[2*x+1]), .O(LUT_L1[x]));
-    end
-    for(x = 0; x < 8; x++)begin
-      mux ML2 (.S(data_in[1]), .I0(LUT_L1[2*x+0]), .I1(LUT_L1[2*x+1]), .O(LUT_L2[x]));
-    end
-    for(x = 0; x < 4; x++)begin
-      mux ML3 (.S(data_in[2]), .I0(LUT_L2[2*x+0]), .I1(LUT_L2[2*x+1]), .O(LUT_L3[x]));
-    end
-    for(x = 0; x < 2; x++)begin
-      mux ML4 (.S(data_in[3]), .I0(LUT_L3[2*x+0]), .I1(LUT_L3[2*x+1]), .O(LUT_L4[x]));
-    end
-  endgenerate
-
-  mux ML5 (.S(data_in[4]), .I0(LUT_L4[0]), .I1(LUT_L4[1]), .O(LUT_out));
+  LUT5 LUT0 (.D(LUT_prog), .S(data_in), .O(LUT_out));
+  mux MUX0 (.S(reg_prog), .I0(LUT_out), .I1(reg_in), .O(register_in));
+  register REG0 (.clk(reg_clk), .nres(reg_nres), .nres_prog(rst_prog), .D(register_in), .O(register_out));
   
 endmodule
 

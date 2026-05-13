@@ -149,6 +149,38 @@ endmodule
 
 
 
+// 5LUT from muxes
+module LUT5 (
+  input wire [31:0] D,
+  input wire [4:0] S,
+  output wire O
+);
+  
+  logic [15:0] LUT_L1;
+  logic [7:0] LUT_L2;
+  logic [3:0] LUT_L3;
+  logic [1:0] LUT_L4;
+
+  genvar x;
+  generate
+    for(x = 0; x < 16; x++)begin
+      mux ML1 (.S(S[0]), .I0(D[2*x+0]), .I1(D[2*x+1]), .O(LUT_L1[x]));
+    end
+    for(x = 0; x < 8; x++)begin
+      mux ML2 (.S(S[1]), .I0(LUT_L1[2*x+0]), .I1(LUT_L1[2*x+1]), .O(LUT_L2[x]));
+    end
+    for(x = 0; x < 4; x++)begin
+      mux ML3 (.S(S[2]), .I0(LUT_L2[2*x+0]), .I1(LUT_L2[2*x+1]), .O(LUT_L3[x]));
+    end
+    for(x = 0; x < 2; x++)begin
+      mux ML4 (.S(S[3]), .I0(LUT_L3[2*x+0]), .I1(LUT_L3[2*x+1]), .O(LUT_L4[x]));
+    end
+  endgenerate
+
+  mux ML5 (.S(S[4]), .I0(LUT_L4[0]), .I1(LUT_L4[1]), .O(O));
+  
+endmodule
+
 // Array of latches
 module latches #(L) (
   input wire [L-1:0] D,
