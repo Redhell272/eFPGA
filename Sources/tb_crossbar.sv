@@ -183,7 +183,6 @@ module testbench;
     load_prog_CB({7'h0, 16'h8000,1'h0,32'h00000000}); //48
 
     #10 prog_apply=1; prog_en=1;
-    #10 prog_apply=0; prog_en=0;
 
 
     load_prog_CBV({8'h01,8'h01,8'h01,8'h01}); //0
@@ -246,7 +245,6 @@ module testbench;
     load_prog_CBV({8'h80,8'h00,8'h00,8'h00}); //55
 
     #10 prog_apply=1; prog_en=1;
-    #10 prog_apply=0; prog_en=0;
     
 
     load_prog_CBH({7'h00,16'h0001,1'b0,32'h00000000}); //0
@@ -301,6 +299,7 @@ module testbench;
     load_prog_CBH({7'h00,16'h0000,1'b1,32'h10000000}); //47
 
     #10 prog_apply=1; prog_en=1;
+    
     #10 prog_apply=0; prog_en=0;
   end
   

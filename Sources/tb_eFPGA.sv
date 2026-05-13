@@ -2,19 +2,35 @@
 //Test Logic Switch
 module testbench;
 
-  reg clk=1;
-  reg reset=1;
-  reg prog_btn=1'b0;
-  reg  [15:0] SW=16'hF971;
-  wire [15:0] led;
+  reg prog_nres=1'b0;
+  reg prog_clk=1'b0;
+  reg prog_start=1'b0;
+  reg reg_nres=1'b0;
+  reg reg_clk=1'b0;
+  reg  [62*3+31:0] N_i=218'h0000000000000000000000000000000000000000000000000000000;
+  wire [62*3+31:0] S_o;
+  reg  [34*3+15:0] S_i=118'h000000000000000000000000000000;
+  wire [34*3+15:0] N_o;
+  reg  [40*2+31:0] W_i=112'h0000000000000000000000000000;
+  wire [56*2+31:0] E_o;
+  reg  [16*2+15:0] E_i=48'h000000000000;
+  wire [16*2+15:0] W_o;
   
   // Instantiate Units Under Test
   eFPGA UUT (
-    .clk(clk),
-    .reset(reset),
-    .prog_btn(prog_btn),
-    .SW(SW),
-    .led(led)
+    .prog_nres(prog_nres),
+    .prog_clk(prog_clk),
+    .prog_start(prog_start),
+    .reg_nres(reg_nres),
+    .reg_clk(reg_clk),
+    .N_i(N_i),
+    .S_o(S_o),
+    .S_i(S_i),
+    .N_o(N_o),
+    .W_i(W_i),
+    .E_o(E_o),
+    .E_i(E_i),
+    .W_o(W_o)
   );
   
   
@@ -25,88 +41,22 @@ module testbench;
     $dumpvars();
     
     //Testbench Inputs
-    #20 reset=0;
-    
-    #50 prog_btn=1;
-    #30 prog_btn=0;
-    #20000;
-    
-    #10000 SW=16'h7ABC;
-    
-    #10000 SW=16'h3C3C;
-    
-    #10000 SW=16'h15a5;
-    
-    #10000 SW=16'h0108;
-    
-    #20000;
-    #30 prog_btn=1;
-    #20 prog_btn=0;
-    #50 SW=16'h0000;
-    #20000;
-    
-          SW=16'h8000;
-    #5000 SW=16'h0000;
-    #10000;
-    
-         SW=16'h0001;
-    #300 SW=16'h8001;
-    #300 SW=16'h0002;
-    #300 SW=16'h8002;
-    #300 SW=16'h0004;
-    #300 SW=16'h8004;
-    #300 SW=16'h0008;
-    #300 SW=16'h8008;
-    #300 SW=16'h0010;
-    #300 SW=16'h8010;
-    #300 SW=16'h0020;
-    #300 SW=16'h8020;
-    #300 SW=16'h0040;
-    #300 SW=16'h8040;
-    #300 SW=16'h0080;
-    #300 SW=16'h8080;
-    #300 SW=16'h0000;
-    #10000;
-    
-          SW=16'h0001;
-    #5000 SW=16'h8001;
-    #5000 SW=16'h007F;
-    #2000;
-    
-         SW=16'h0001;
-    #300 SW=16'h0003;
-    #300 SW=16'h0007;
-    #300 SW=16'h000f;
-    #300 SW=16'h001f;
-    #300 SW=16'h003f;
-    #300 SW=16'h007f;
-    #300 SW=16'h0000;
-    #10000;
-    
-          SW=16'h0009;
-    #5000 SW=16'h8009;
-    #5000 SW=16'h0006;
-    #10000;
-    
-          SW=16'h007F;
-    #5000 SW=16'h807F;
-    #5000 SW=16'h0010;
-    #10000;
-    
-    #20000;
-    #30 prog_btn=1;
-    #20 prog_btn=0;
-    #50 SW=16'h0000;
-    #20000;
-    
+    #20 prog_nres=1;
+    #40 prog_nres=1;
+
+    #10 prog_start=1;
+    #10 prog_start=0;
+
+    //More?
+
   end
   
   //Clocks
   always
-    #5 clk = ~clk;   // 100 Mhz clock
+    #5 prog_clk = ~prog_clk;   // 100 Mhz clock
   
   //Simulation Runtime
   initial
-    #8000000 $finish;
+    #160000 $finish;
   
 endmodule
