@@ -55,10 +55,10 @@ module eFPGA_prog #(V, H, W) (
 
   assign state = {row_cnt[0], col_cnt[0]};
 
-  assign en_num =   (state == 2'b00) ? 8'h31 :       // CLINE CB State
-                    (state == 2'b01) ? 8'h30 :       // CLINE CBH State
-                    (state == 2'b10) ? 8'h38 :       // LLINE CBV State
-                    (state == 2'b11) ? 8'h46 : '1;   // LLINE LS State
+  assign en_num =   (state == 2'b00) ? 8'h32 :       // CLINE CB State
+                    (state == 2'b01) ? 8'h31 :       // CLINE CBH State
+                    (state == 2'b10) ? 8'h39 :       // LLINE CBV State
+                    (state == 2'b11) ? 8'h47 : '1;   // LLINE LS State
 
   assign data_num = (state == 2'b00) ? 6'h07 :       // CLINE CB State
                     (state == 2'b01) ? 6'h07 :       // CLINE CBH State
@@ -140,10 +140,11 @@ module eFPGA_prog #(V, H, W) (
           end else begin
             data_cnt <= data_cnt + 1;
           end
-        end else if (prog_start_RE[1] == 1) begin
-          data_cnt <= 1;
+        end else if (prog_start_RE[0] == 1) begin
           prog_s_shft <= {prog_s_shft[2*H-1:0], 1'b1};
           prog_s_strobe <= 1;
+        end else if (prog_start_RE[1] == 1) begin
+          data_cnt <= 1;
         end else begin
           prog_s_strobe <= 0;
         end
@@ -159,8 +160,9 @@ module eFPGA_prog #(V, H, W) (
         data_sel <= 0;
       end else begin
         if (prog_start_RE[0] == 1 && !cnt) begin
-          data_sel <= 2'b11;
-        end else if (cnt && (prog_en == 1'b1 && prog_apply == 1'b0)) begin
+            addr_cnt <= addr_cnt + 1;
+            data <= dout;
+        end else if ((cnt || prog_start_RE[1]) && (prog_en == 1'b1 && prog_apply == 1'b0)) begin
           data_sel <= data_sel + 1;
           if (data_sel == 2'b11) begin
             addr_cnt <= addr_cnt + 1;
