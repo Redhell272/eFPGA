@@ -53,11 +53,11 @@ module logic_slice (
   generate
     for(x = 0; x < 4; x++)begin
       logic_module LM0 (.D(data[x*9+11:x*9+3]), .E(en[3:0]),   .data_out(Lo[0][x*2+1:x*2]), .data_in(Li[0][x*6+4:x*6]), .reg_in(Li[0][x*6+5]), .reg_nres(reg_nres), .reg_clk(reg_clk));
-      logic_switch LS0 (.D(data[x*9+11:x*9+0]), .E(en[21:4]),   .data_in(Li[0][x*6+5:x*6]), .data_out(Lo[0][x*2+1:x*2]), .up_out(wires_U[x][5:0]), .down_in(wires_D[x][9:0]), .up_in(wires_U[x+1][5:0]), .down_out(wires_D[x+1][9:0]));
+      logic_switch LS0 (.D(data[x*9+11:x*9+0]), .E(en[21:4]),   .data_in(Li[1][x*6+5:x*6]), .data_out(Lo[0][x*2+1:x*2]), .up_out(wires_U[x][5:0]), .down_in(wires_D[x][9:0]), .up_in(wires_U[x+1][5:0]), .down_out(wires_D[x+1][9:0]));
       logic_module LM1 (.D(data[x*9+11:x*9+3]), .E(en[25:22]), .data_out(Lo[1][x*2+1:x*2]), .data_in(Li[1][x*6+4:x*6]), .reg_in(Li[1][x*6+5]), .reg_nres(reg_nres), .reg_clk(reg_clk));
-      logic_switch LS1 (.D(data[x*9+11:x*9+0]), .E(en[43:26]),  .data_in(Li[1][x*6+5:x*6]), .data_out(Lo[1][x*2+1:x*2]), .up_out(wires_U[x][11:6]), .down_in(wires_D[x][19:10]), .up_in(wires_U[x+1][11:6]), .down_out(wires_D[x+1][19:10]));
+      logic_switch LS1 (.D(data[x*9+11:x*9+0]), .E(en[43:26]),  .data_in(Li[2][x*6+5:x*6]), .data_out(Lo[1][x*2+1:x*2]), .up_out(wires_U[x][11:6]), .down_in(wires_D[x][19:10]), .up_in(wires_U[x+1][11:6]), .down_out(wires_D[x+1][19:10]));
       logic_module LM2 (.D(data[x*9+11:x*9+3]), .E(en[47:44]), .data_out(Lo[2][x*2+1:x*2]), .data_in(Li[2][x*6+4:x*6]), .reg_in(Li[2][x*6+5]), .reg_nres(reg_nres), .reg_clk(reg_clk));
-      logic_switch LS2 (.D(data[x*9+11:x*9+0]), .E(en[65:48]),  .data_in(Li[2][x*6+5:x*6]), .data_out(Lo[2][x*2+1:x*2]), .up_out(wires_U[x][17:12]), .down_in(wires_D[x][29:20]), .up_in(wires_U[x+1][17:12]), .down_out(wires_D[x+1][29:20]));
+      logic_switch LS2 (.D(data[x*9+11:x*9+0]), .E(en[65:48]),  .data_in(Li[3][x*6+5:x*6]), .data_out(Lo[2][x*2+1:x*2]), .up_out(wires_U[x][17:12]), .down_in(wires_D[x][29:20]), .up_in(wires_U[x+1][17:12]), .down_out(wires_D[x+1][29:20]));
       logic_module LM3 (.D(data[x*9+11:x*9+3]), .E(en[69:66]), .data_out(Lo[3][x*2+1:x*2]), .data_in(Li[3][x*6+4:x*6]), .reg_in(Li[3][x*6+5]), .reg_nres(reg_nres), .reg_clk(reg_clk));
     end
   endgenerate
