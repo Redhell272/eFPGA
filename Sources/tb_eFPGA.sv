@@ -2,16 +2,17 @@
 //Test Logic Switch
 module testbench;
 
+  reg reg_clk_en=1'b1;
   reg prog_nres=1'b0;
   reg prog_clk=1'b0;
   reg prog_start=1'b0;
   reg reg_nres=1'b0;
   reg reg_clk=1'b0;
-  reg  [62*3+31:0] N_i=218'h000000000000000000000000000000000000000000000000000000f;
+  reg  [62*3+31:0] N_i=218'h0000000000000000000000000000000000000000000000000000000;
   wire [62*3+31:0] S_o;
   reg  [34*3+15:0] S_i=118'h000000000000000000000000000000;
   wire [34*3+15:0] N_o;
-  reg  [40*2+31:0] W_i=112'h0000000000000000000000000000;
+  reg  [40*2+31:0] W_i=112'h000000000000000000000000000F;
   wire [56*2+31:0] E_o;
   reg  [16*2+15:0] E_i=48'h000000000000;
   wire [16*2+15:0] W_o;
@@ -22,7 +23,7 @@ module testbench;
     .prog_clk(prog_clk),
     .prog_start(prog_start),
     .reg_nres(reg_nres),
-    .reg_clk(reg_clk),
+    .reg_clk(reg_clk && reg_clk_en),
     .N_i(N_i),
     .S_o(S_o),
     .S_i(S_i),
@@ -41,19 +42,24 @@ module testbench;
     $dumpvars();
     
     //Testbench Inputs
+    #20 reg_clk_en=0;
     #20 prog_nres=1;
     #40 prog_nres=1;
 
     #10 prog_start=1;
     #10 prog_start=0;
 
-    //More?
+    #132000 reg_clk_en=1;
+    #20 reg_nres=1;
 
   end
   
   //Clocks
   always
     #5 prog_clk = ~prog_clk;   // 100 Mhz clock
+    
+  always
+    #5 reg_clk = ~reg_clk;     // 100 Mhz clock
   
   //Simulation Runtime
   initial

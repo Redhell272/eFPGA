@@ -96,7 +96,7 @@ module crossbar_line #(V) (
   // Instances
   
   crossbar CB0 (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s_in), .prog_s_out(prog_s[0]),
-    .N_i(N_i[(V*62)+31:(V*62)]), .S_o(S_o[(V*62)+31:(V*62)]), .S_i(S_i[(V*34)+15:(V*34)]), .N_o(N_o[(V*34)+15:(V*34)]), .W_i(W_i), .E_o(wires_W[0]), .E_i(wires_E[0]), .W_o(W_o));
+    .N_i(N_i[31:0]), .S_o(S_o[31:0]), .S_i(S_i[15:0]), .N_o(N_o[15:0]), .W_i(W_i), .E_o(wires_W[0]), .E_i(wires_E[0]), .W_o(W_o));
   genvar x;
   generate
     for(x = 0; x < V; x++)begin
@@ -104,7 +104,7 @@ module crossbar_line #(V) (
         .N_i(N_i[x*62+61:x*62+32]), .S_o(S_o[x*62+61:x*62+32]), .S_i(S_i[x*34+33:x*34+16]), .N_o(N_o[x*34+33:x*34+16]),
         .W_i(wires_W[2*x]), .E_o(wires_W[2*x+1]), .E_i(wires_E[2*x+1]), .W_o(wires_E[2*x]));
       crossbar CB (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*x+1]), .prog_s_out(prog_s[2*x+2]),
-        .N_i(N_i[x*62+31:x*62+0]), .S_o(S_o[x*62+31:x*62+0]), .S_i(S_i[x*34+15:x*34+0]), .N_o(N_o[x*34+15:x*34+0]),
+        .N_i(N_i[x*62+93:x*62+62]), .S_o(S_o[x*62+93:x*62+62]), .S_i(S_i[x*34+49:x*34+34]), .N_o(N_o[x*34+49:x*34+34]),
         .W_i(wires_W[2*x+1]), .E_o(wires_W[2*x+2]), .E_i(wires_E[2*x+2]), .W_o(wires_E[2*x+1]));
     end
   endgenerate
@@ -149,7 +149,7 @@ module logic_line #(V) (
   // Instances
   
   V_crossbar VCB0 (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s_in), .prog_s_out(prog_s[0]),
-    .N_i(N_i[(V*62)+31:(V*62)]), .S_o(S_o[(V*62)+31:(V*62)]), .S_i(S_i[(V*34)+15:(V*34)]), .N_o(N_o[(V*34)+15:(V*34)]), .W_i(W_i), .E_o(wires_LI[0]));
+    .N_i(N_i[31:0]), .S_o(S_o[31:0]), .S_i(S_i[15:0]), .N_o(N_o[15:0]), .W_i(W_i), .E_o(wires_LI[0]));
   genvar x;
   generate
     for(x = 0; x < V; x++)begin
@@ -158,7 +158,7 @@ module logic_line #(V) (
         .N_i(N_i[x*62+61:x*62+32]), .S_o(S_o[x*62+61:x*62+32]), .S_i(S_i[x*34+33:x*34+16]), .N_o(N_o[x*34+33:x*34+16]),
         .W_i(wires_LI[x]), .E_o(wires_LO[x]));
       V_crossbar VCB (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*x+1]), .prog_s_out(prog_s[2*x+2]),
-        .N_i(N_i[x*62+31:x*62+0]), .S_o(S_o[x*62+31:x*62+0]), .S_i(S_i[x*34+15:x*34+0]), .N_o(N_o[x*34+15:x*34+0]),
+        .N_i(N_i[x*62+93:x*62+62]), .S_o(S_o[x*62+93:x*62+62]), .S_i(S_i[x*34+49:x*34+34]), .N_o(N_o[x*34+49:x*34+34]),
         .W_i(wires_LO[x]), .E_o(wires_LI[x+1]));
     end
   endgenerate
