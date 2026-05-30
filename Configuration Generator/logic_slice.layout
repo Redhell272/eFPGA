@@ -2,53 +2,53 @@
 			\	\		\	\																					\	\		\	\																					\	\		\	\																					\	\	
 		\	+			+		x	x	x	x	x	x	\													\	+			+		x	x	x	x	x	x	\													\	+			+		x	x	x	x	x	x	\													\	+		o
 		\		+			+	x	x	x	x	x	x	\													\		+			+	x	x	x	x	x	x	\													\		+			+	x	x	x	x	x	x	\													\		+	o
-			o	o				y	y	y	y	y	y															o	o				y	y	y	y	y	y															o	o				y	y	y	y	y	y															o	o	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
-	l	l	l	l											y	y	y	y	y	y	y	y	y	y		l	l	l	l											y	y	y	y	y	y	y	y	y	y		l	l	l	l											y	y	y	y	y	y	y	y	y	y		l	l	l	l	
-	l	l	l	l	\	+									x	x	x	x	x	x	x	x	x	x	\	l	l	l	l	\	+									x	x	x	x	x	x	x	x	x	x	\	l	l	l	l	\	+									x	x	x	x	x	x	x	x	x	x	\	l	l	l	l	
-	r	r			\		+								x	x	x	x	x	x	x	x	x	x	\	r	r			\		+								x	x	x	x	x	x	x	x	x	x	\	r	r			\		+								x	x	x	x	x	x	x	x	x	x	\	r	r			
+			oL	oR				y	y	y	y	y	y															oL	oR				y	y	y	y	y	y															oL	oR				y	y	y	y	y	y															oL	oR	
+-	l0	l8	l16	l24		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l0	l8	l16	l24		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l0	l8	l16	l24		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l0	l8	l16	l24	
+-	l1	l9	l17	l25		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l1	l9	l17	l25		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l1	l9	l17	l25		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l1	l9	l17	l25	
+-	l2	l10	l18	l26		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l2	l10	l18	l26		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l2	l10	l18	l26		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l2	l10	l18	l26	
+-	l3	l11	l19	l27		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l3	l11	l19	l27		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l3	l11	l19	l27		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l3	l11	l19	l27	
+-	l4	l12	l20	l28		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l4	l12	l20	l28		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l4	l12	l20	l28		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l4	l12	l20	l28	
+-	l5	l13	l21	l29		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l5	l13	l21	l29		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l5	l13	l21	l29		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l5	l13	l21	l29	
+	l6	l14	l22	l30											y	y	y	y	y	y	y	y	y	y		l6	l14	l22	l30											y	y	y	y	y	y	y	y	y	y		l6	l14	l22	l30											y	y	y	y	y	y	y	y	y	y		l6	l14	l22	l30	
+	l7	l15	l23	l31	\	+									x	x	x	x	x	x	x	x	x	x	\	l7	l15	l23	l31	\	+									x	x	x	x	x	x	x	x	x	x	\	l7	l15	l23	l31	\	+									x	x	x	x	x	x	x	x	x	x	\	l7	l15	l23	l31	
+	rmu	rre			\		+								x	x	x	x	x	x	x	x	x	x	\	rmu	rre			\		+								x	x	x	x	x	x	x	x	x	x	\	rmu	rre			\		+								x	x	x	x	x	x	x	x	x	x	\	rmu	rre			
 			\	\		\	\																					\	\		\	\																					\	\		\	\																					\	\	
 		\	+			+		x	x	x	x	x	x	\													\	+			+		x	x	x	x	x	x	\													\	+			+		x	x	x	x	x	x	\													\	+		o
 		\		+			+	x	x	x	x	x	x	\													\		+			+	x	x	x	x	x	x	\													\		+			+	x	x	x	x	x	x	\													\		+	o
-			o	o				y	y	y	y	y	y															o	o				y	y	y	y	y	y															o	o				y	y	y	y	y	y															o	o	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
-	l	l	l	l											y	y	y	y	y	y	y	y	y	y		l	l	l	l											y	y	y	y	y	y	y	y	y	y		l	l	l	l											y	y	y	y	y	y	y	y	y	y		l	l	l	l	
-	l	l	l	l	\	+									x	x	x	x	x	x	x	x	x	x	\	l	l	l	l	\	+									x	x	x	x	x	x	x	x	x	x	\	l	l	l	l	\	+									x	x	x	x	x	x	x	x	x	x	\	l	l	l	l	
-	r	r			\		+								x	x	x	x	x	x	x	x	x	x	\	r	r			\		+								x	x	x	x	x	x	x	x	x	x	\	r	r			\		+								x	x	x	x	x	x	x	x	x	x	\	r	r			
+			oL	oR				y	y	y	y	y	y															oL	oR				y	y	y	y	y	y															oL	oR				y	y	y	y	y	y															oL	oR	
+-	l0	l8	l16	l24		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l0	l8	l16	l24		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l0	l8	l16	l24		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l0	l8	l16	l24	
+-	l1	l9	l17	l25		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l1	l9	l17	l25		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l1	l9	l17	l25		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l1	l9	l17	l25	
+-	l2	l10	l18	l26		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l2	l10	l18	l26		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l2	l10	l18	l26		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l2	l10	l18	l26	
+-	l3	l11	l19	l27		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l3	l11	l19	l27		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l3	l11	l19	l27		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l3	l11	l19	l27	
+-	l4	l12	l20	l28		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l4	l12	l20	l28		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l4	l12	l20	l28		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l4	l12	l20	l28	
+-	l5	l13	l21	l29		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l5	l13	l21	l29		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l5	l13	l21	l29		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l5	l13	l21	l29	
+	l6	l14	l22	l30											y	y	y	y	y	y	y	y	y	y		l6	l14	l22	l30											y	y	y	y	y	y	y	y	y	y		l6	l14	l22	l30											y	y	y	y	y	y	y	y	y	y		l6	l14	l22	l30	
+	l7	l15	l23	l31	\	+									x	x	x	x	x	x	x	x	x	x	\	l7	l15	l23	l31	\	+									x	x	x	x	x	x	x	x	x	x	\	l7	l15	l23	l31	\	+									x	x	x	x	x	x	x	x	x	x	\	l7	l15	l23	l31	
+	rmu	rre			\		+								x	x	x	x	x	x	x	x	x	x	\	rmu	rre			\		+								x	x	x	x	x	x	x	x	x	x	\	rmu	rre			\		+								x	x	x	x	x	x	x	x	x	x	\	rmu	rre			
 			\	\		\	\																					\	\		\	\																					\	\		\	\																					\	\	
 		\	+			+		x	x	x	x	x	x	\													\	+			+		x	x	x	x	x	x	\													\	+			+		x	x	x	x	x	x	\													\	+		o
 		\		+			+	x	x	x	x	x	x	\													\		+			+	x	x	x	x	x	x	\													\		+			+	x	x	x	x	x	x	\													\		+	o
-			o	o				y	y	y	y	y	y															o	o				y	y	y	y	y	y															o	o				y	y	y	y	y	y															o	o	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
-	l	l	l	l											y	y	y	y	y	y	y	y	y	y		l	l	l	l											y	y	y	y	y	y	y	y	y	y		l	l	l	l											y	y	y	y	y	y	y	y	y	y		l	l	l	l	
-	l	l	l	l	\	+									x	x	x	x	x	x	x	x	x	x	\	l	l	l	l	\	+									x	x	x	x	x	x	x	x	x	x	\	l	l	l	l	\	+									x	x	x	x	x	x	x	x	x	x	\	l	l	l	l	
-	r	r			\		+								x	x	x	x	x	x	x	x	x	x	\	r	r			\		+								x	x	x	x	x	x	x	x	x	x	\	r	r			\		+								x	x	x	x	x	x	x	x	x	x	\	r	r			
+			oL	oR				y	y	y	y	y	y															oL	oR				y	y	y	y	y	y															oL	oR				y	y	y	y	y	y															oL	oR	
+-	l0	l8	l16	l24		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l0	l8	l16	l24		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l0	l8	l16	l24		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l0	l8	l16	l24	
+-	l1	l9	l17	l25		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l1	l9	l17	l25		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l1	l9	l17	l25		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l1	l9	l17	l25	
+-	l2	l10	l18	l26		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l2	l10	l18	l26		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l2	l10	l18	l26		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l2	l10	l18	l26	
+-	l3	l11	l19	l27		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l3	l11	l19	l27		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l3	l11	l19	l27		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l3	l11	l19	l27	
+-	l4	l12	l20	l28		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l4	l12	l20	l28		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l4	l12	l20	l28		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l4	l12	l20	l28	
+-	l5	l13	l21	l29		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l5	l13	l21	l29		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l5	l13	l21	l29		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l5	l13	l21	l29	
+	l6	l14	l22	l30											y	y	y	y	y	y	y	y	y	y		l6	l14	l22	l30											y	y	y	y	y	y	y	y	y	y		l6	l14	l22	l30											y	y	y	y	y	y	y	y	y	y		l6	l14	l22	l30	
+	l7	l15	l23	l31	\	+									x	x	x	x	x	x	x	x	x	x	\	l7	l15	l23	l31	\	+									x	x	x	x	x	x	x	x	x	x	\	l7	l15	l23	l31	\	+									x	x	x	x	x	x	x	x	x	x	\	l7	l15	l23	l31	
+	rmu	rre			\		+								x	x	x	x	x	x	x	x	x	x	\	rmu	rre			\		+								x	x	x	x	x	x	x	x	x	x	\	rmu	rre			\		+								x	x	x	x	x	x	x	x	x	x	\	rmu	rre			
 			\	\		\	\																					\	\		\	\																					\	\		\	\																					\	\	
 		\	+			+		x	x	x	x	x	x	\													\	+			+		x	x	x	x	x	x	\													\	+			+		x	x	x	x	x	x	\													\	+		o
 		\		+			+	x	x	x	x	x	x	\													\		+			+	x	x	x	x	x	x	\													\		+			+	x	x	x	x	x	x	\													\		+	o
-			o	o				y	y	y	y	y	y															o	o				y	y	y	y	y	y															o	o				y	y	y	y	y	y															o	o	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
--	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l	l	l	l	
-	l	l	l	l											y	y	y	y	y	y	y	y	y	y		l	l	l	l											y	y	y	y	y	y	y	y	y	y		l	l	l	l											y	y	y	y	y	y	y	y	y	y		l	l	l	l	
-	l	l	l	l	\	+									x	x	x	x	x	x	x	x	x	x	\	l	l	l	l	\	+									x	x	x	x	x	x	x	x	x	x	\	l	l	l	l	\	+									x	x	x	x	x	x	x	x	x	x	\	l	l	l	l	
-	r	r			\		+								x	x	x	x	x	x	x	x	x	x	\	r	r			\		+								x	x	x	x	x	x	x	x	x	x	\	r	r			\		+								x	x	x	x	x	x	x	x	x	x	\	r	r			
+			oL	oR				y	y	y	y	y	y															oL	oR				y	y	y	y	y	y															oL	oR				y	y	y	y	y	y															oL	oR	
+-	l0	l8	l16	l24		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l0	l8	l16	l24		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l0	l8	l16	l24		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l0	l8	l16	l24	
+-	l1	l9	l17	l25		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l1	l9	l17	l25		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l1	l9	l17	l25		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l1	l9	l17	l25	
+-	l2	l10	l18	l26		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l2	l10	l18	l26		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l2	l10	l18	l26		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l2	l10	l18	l26	
+-	l3	l11	l19	l27		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l3	l11	l19	l27		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l3	l11	l19	l27		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l3	l11	l19	l27	
+-	l4	l12	l20	l28		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l4	l12	l20	l28		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l4	l12	l20	l28		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l4	l12	l20	l28	
+-	l5	l13	l21	l29		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l5	l13	l21	l29		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l5	l13	l21	l29		x	x	x	x	x	x	x	x		x	x	x	x	x	x	x	x	x	x	-	l5	l13	l21	l29	
+	l6	l14	l22	l30											y	y	y	y	y	y	y	y	y	y		l6	l14	l22	l30											y	y	y	y	y	y	y	y	y	y		l6	l14	l22	l30											y	y	y	y	y	y	y	y	y	y		l6	l14	l22	l30	
+	l7	l15	l23	l31	\	+									x	x	x	x	x	x	x	x	x	x	\	l7	l15	l23	l31	\	+									x	x	x	x	x	x	x	x	x	x	\	l7	l15	l23	l31	\	+									x	x	x	x	x	x	x	x	x	x	\	l7	l15	l23	l31	
+	rmu	rre			\		+								x	x	x	x	x	x	x	x	x	x	\	rmu	rre			\		+								x	x	x	x	x	x	x	x	x	x	\	rmu	rre			\		+								x	x	x	x	x	x	x	x	x	x	\	rmu	rre			
 						\	\	|	|	|	|	|	|		o	o	o	o	o	o	o	o	o	o							\	\	|	|	|	|	|	|		o	o	o	o	o	o	o	o	o	o							\	\	|	|	|	|	|	|		o	o	o	o	o	o	o	o	o	o						

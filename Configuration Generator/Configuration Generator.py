@@ -32,9 +32,11 @@ class CrossoutGridApp:
         self._drag_add: bool | None = None
         self._drag_visited: set = set()
         self._rendered_cells: dict[tuple[int, int], int] = {}
+        self._rendered_labels: dict[tuple[int, int], int] = {}
         self._rendered_points: dict[tuple[int, int], list[int]] = {}
         self._rendered_bridges: dict[tuple, int] = {}
         self._rendered_markers: dict[tuple, int] = {}
+        self._rendered_entry_labels: dict[tuple[int, int], int] = {}
         self._rendered_range: tuple[int, int, int, int] = (0, 0, 0, 0)
         self._grid_lines_dirty: bool = True
         self._module_boundaries_drawn: bool = False
@@ -49,6 +51,7 @@ class CrossoutGridApp:
         self.static_entries: set[tuple[str, int, int]] = set()
         self.bridge_entries: set[tuple] = set()
         self._bridge_cell_positions: set[tuple[int, int]] = set()
+        self.entry_labels: dict[tuple[int, int], str] = {}
         self._left_entry_rows: set[int] = set()
         self._right_entry_rows: set[int] = set()
         self._top_entry_cols: set[int] = set()
@@ -67,10 +70,10 @@ class CrossoutGridApp:
 
     def _build_ui(self):
         controls = ttk.Frame(self.root, padding=(16, 12)); controls.pack(fill="x")
-        ttk.Label(controls, text="Cols:").pack(side="left")
+        ttk.Label(controls, text="Cols [V]:").pack(side="left")
         self._n_var = tk.StringVar(value="2")
         ttk.Spinbox(controls, textvariable=self._n_var, from_=1, to=32, width=3).pack(side="left", padx=(4, 0))
-        ttk.Label(controls, text="Rows:").pack(side="left", padx=(8, 0))
+        ttk.Label(controls, text="Rows [H]:").pack(side="left", padx=(8, 0))
         self._m_var = tk.StringVar(value="2")
         ttk.Spinbox(controls, textvariable=self._m_var, from_=1, to=32, width=3).pack(side="left", padx=(4, 0))
         ttk.Button(controls, text="Build eFPGA", command=self._build_efpga).pack(side="left", padx=(10, 0))
@@ -242,9 +245,11 @@ class CrossoutGridApp:
         vh = max(1.0, self.grid_canvas.winfo_height())
         self.grid_canvas.delete("all")
         self._rendered_cells.clear()
+        self._rendered_labels.clear()
         self._rendered_points.clear()
         self._rendered_bridges.clear()
         self._rendered_markers.clear()
+        self._rendered_entry_labels.clear()
         self._last_routing_key = None
         self._last_impacted_cells = set()
         self._rendered_range = (-1, -1, -1, -1)
@@ -300,7 +305,7 @@ class CrossoutGridApp:
                 return
             if self.cell_size < self._lod_cell_size:
                 return
-            if token not in ("l", "r"):
+            if not (token and token[0] in ("l", "r")):
                 return
             x0 = self._draw_x + c * self.cell_size
             y0 = self._draw_y + r * self.cell_size
@@ -309,10 +314,22 @@ class CrossoutGridApp:
                 fill=self.logic_cell_color, outline="",
                 tags=(f"cell_{r}_{c}", "cell", "cell_logic"),
             )
+            label = token[1:]
+            if label and self.cell_size >= 10:
+                cx = x0 + self.cell_size * 0.5
+                cy = y0 + self.cell_size * 0.5
+                fsize = max(6, min(int(self.cell_size * 0.32), 9))
+                self._rendered_labels[(r, c)] = self.grid_canvas.create_text(
+                    cx, cy, text=label, fill="#2f2f2f",
+                    font=("Arial", fsize),
+                    tags=(f"cell_{r}_{c}", "cell", "cell_label"),
+                )
 
         def _evict_cell(r: int, c: int) -> None:
             if (r, c) in self._rendered_cells:
                 self.grid_canvas.delete(self._rendered_cells.pop((r, c)))
+            if (r, c) in self._rendered_labels:
+                self.grid_canvas.delete(self._rendered_labels.pop((r, c)))
             if (r, c) in self._rendered_points:
                 for id_ in self._rendered_points.pop((r, c)):
                     self.grid_canvas.delete(id_)
@@ -503,7 +520,7 @@ class CrossoutGridApp:
                 (r, c)
                 for c in range(lw)
                 for r in range(lh)
-                if mod_cells[r][c] in configurable
+                if mod_cells[r][c] in configurable or (mod_cells[r][c] and mod_cells[r][c][0] in ("l", "r"))
             ]
             config_pos = [
                 (r, c)
@@ -653,7 +670,7 @@ class CrossoutGridApp:
                 (r, c)
                 for c in range(lw)
                 for r in range(lh)
-                if mod_cells[r][c] in configurable
+                if mod_cells[r][c] in configurable or (mod_cells[r][c] and mod_cells[r][c][0] in ("l", "r"))
             ]
             config_pos = [
                 (r, c)
@@ -728,7 +745,10 @@ class CrossoutGridApp:
         highlight_sources = {
             (r, c)
             for r, c in self.crossed_cells
-            if not self.layout_cells or self.layout_cells[r][c] not in {"x", "y", "v", "o", "l", "r"}
+            if not self.layout_cells or (
+                self.layout_cells[r][c] not in {"x", "y", "v", "o", "l", "r"}
+                and not (self.layout_cells[r][c] and self.layout_cells[r][c][0] in ("l", "r", "o"))
+            )
         }
         highlighted_rows = {r for r, _ in highlight_sources}
         highlighted_cols = {c for _, c in highlight_sources}
@@ -760,7 +780,7 @@ class CrossoutGridApp:
         for (r, c) in impacted_cells:
             if r0_vp <= r < r1_vp and c0_vp <= c < c1_vp:
                 token = self.layout_cells[r][c] if self.layout_cells else ""
-                if token not in ("", "o", "v", "+", "\\", "+\\", "l", "r"):
+                if token not in ("", "o", "v", "+", "\\", "+\\", "l", "r") and not (token and token[0] in ("l", "r", "o")):
                     self.grid_canvas.create_rectangle(
                         dx + c * cs, dy + r * cs,
                         dx + (c + 1) * cs, dy + (r + 1) * cs,
@@ -783,6 +803,7 @@ class CrossoutGridApp:
         r0, r1, c0, c1 = self._rendered_range
         self._draw_layout_points(impacted_cells, r0, r1, c0, c1, force_redraw=redraw_routing)
         self._draw_entry_markers(force_redraw=redraw_routing)
+        self.grid_canvas.tag_raise("cell_label")
         self.grid_canvas.tag_raise("grid_frame")
         self.grid_canvas.tag_raise("layout_point")
         self.grid_canvas.tag_raise("layout_entry")
@@ -836,8 +857,8 @@ class CrossoutGridApp:
                 ids = self._draw_y_node(r, c)
             elif token == "v":
                 ids = self._draw_v_node(r, c, active=(impacted is not None and (r, c) in impacted))
-            elif token == "o":
-                ids = self._draw_o_node(r, c, active=(impacted is not None and (r, c) in impacted))
+            elif token and token[0] == "o":
+                ids = self._draw_o_node(r, c, active=(impacted is not None and (r, c) in impacted), label=token[1:])
             elif token == "+":
                 ids = self._draw_plus_node(r, c)
             elif token == "\\":
@@ -888,7 +909,7 @@ class CrossoutGridApp:
         )
         return [id_]
 
-    def _draw_o_node(self, row: int, col: int, active: bool = False) -> list[int]:
+    def _draw_o_node(self, row: int, col: int, active: bool = False, label: str = "") -> list[int]:
         cx, cy = self._cell_center(row, col)
         r = max(2.0, self.cell_size * 0.33)
         fill = "#d90f0f" if active else "#f2f2f2"
@@ -990,7 +1011,7 @@ class CrossoutGridApp:
             (r, c): tok
             for r, row in enumerate(self.layout_cells)
             for c, tok in enumerate(row)
-            if tok in node_tokens
+            if tok in node_tokens or (len(tok) > 1 and tok[0] == "o")
         }
 
     def _draw_module_boundaries(self) -> None:
@@ -1145,7 +1166,7 @@ class CrossoutGridApp:
                 break
             if self.layout_cells[row][col] in ("\\", "+\\"):
                 break
-            if self.layout_cells[row][col] in ("l", "r"):
+            if self.layout_cells[row][col] and self.layout_cells[row][col][0] in ("l", "r"):
                 path.extend(pending_path)
                 pending_path.clear()
                 cells.append((row, col))
@@ -1208,7 +1229,7 @@ class CrossoutGridApp:
                 next_vertical_dr = dr
 
             next_directions = [direction]
-            if token in ("o", "\\") or token in ("l", "r"):
+            if token == "\\" or (token and token[0] in ("o", "l", "r")):
                 next_directions = []
             elif token == "x" and (next_row, next_col) in self.crossed_cells:
                 branch_direction = self._branch_direction_for_cross(next_row, next_col, direction)
@@ -1326,6 +1347,9 @@ class CrossoutGridApp:
             for id_ in self._rendered_markers.values():
                 self.grid_canvas.delete(id_)
             self._rendered_markers.clear()
+            for id_ in self._rendered_entry_labels.values():
+                self.grid_canvas.delete(id_)
+            self._rendered_entry_labels.clear()
         else:
             # Evict markers that scrolled out of view.
             # Regular entry keys: (side, row, col)  → indices [1], [2]
@@ -1335,28 +1359,51 @@ class CrossoutGridApp:
                                  else (er0 <= k[1] < er1 and ec0 <= k[2] < ec1))]
             for k in to_remove:
                 self.grid_canvas.delete(self._rendered_markers.pop(k))
+            to_remove_lbl = [pos for pos in self._rendered_entry_labels
+                             if not (er0 <= pos[0] < er1 and ec0 <= pos[1] < ec1)]
+            for pos in to_remove_lbl:
+                self.grid_canvas.delete(self._rendered_entry_labels.pop(pos))
 
         radius = max(2.0, self.cell_size * 0.33)
         added = False
+
+        def _maybe_add_entry_label(row: int, col: int) -> None:
+            pos = (row, col)
+            if pos in self._rendered_entry_labels or pos not in self.entry_labels:
+                return
+            if self.cell_size < 10:
+                return
+            cx, cy = self._cell_center(row, col)
+            fsize = max(6, min(int(self.cell_size * 0.32), 9))
+            self._rendered_entry_labels[pos] = self.grid_canvas.create_text(
+                cx, cy, text=self.entry_labels[pos], fill="#f2f2f2",
+                font=("Arial", fsize),
+                tags=("layout_entry", "cell_label"),
+            )
+
         for row, start_col in self.left_entries:
             key = ("left", row, start_col)
             if er0 <= row < er1 and ec0 <= start_col < ec1 and key not in self._rendered_markers:
                 self._rendered_markers[key] = self._draw_entry_marker_at(key, self._cell_center(row, start_col), radius)
+                _maybe_add_entry_label(row, start_col)
                 added = True
         for row, start_col in self.right_entries:
             key = ("right", row, start_col)
             if er0 <= row < er1 and ec0 <= start_col < ec1 and key not in self._rendered_markers:
                 self._rendered_markers[key] = self._draw_entry_marker_at(key, self._cell_center(row, start_col), radius)
+                _maybe_add_entry_label(row, start_col)
                 added = True
         for start_row, col in self.top_entries:
             key = ("top", start_row, col)
             if er0 <= start_row < er1 and ec0 <= col < ec1 and key not in self._rendered_markers:
                 self._rendered_markers[key] = self._draw_entry_marker_at(key, self._cell_center(start_row, col), radius)
+                _maybe_add_entry_label(start_row, col)
                 added = True
         for start_row, col in self.bottom_entries:
             key = ("bottom", start_row, col)
             if er0 <= start_row < er1 and ec0 <= col < ec1 and key not in self._rendered_markers:
                 self._rendered_markers[key] = self._draw_entry_marker_at(key, self._cell_center(start_row, col), radius)
+                _maybe_add_entry_label(start_row, col)
                 added = True
 
         # Static (non-interactive) logic input markers — drawn as small grey squares
@@ -1418,7 +1465,7 @@ class CrossoutGridApp:
     def _is_passable(self, row: int, col: int) -> bool:
         if row < 0 or row >= self.grid_rows or col < 0 or col >= self.grid_cols:
             return False
-        return self.layout_cells[row][col] in {"x", "y", "v", "o", "+", "\\", "+\\", "l", "r", ""}
+        return self.layout_cells[row][col] in {"x", "y", "v", "o", "+", "\\", "+\\", "l", "r", ""} or (self.layout_cells[row][col] and self.layout_cells[row][col][0] in ("l", "r", "o"))
 
     def _cell_center(self, row: int, col: int) -> tuple[float, float]:
         x = self._draw_x + col * self.cell_size + self.cell_size / 2
@@ -1531,6 +1578,7 @@ class CrossoutGridApp:
         left_entries:   set[tuple[int, int]]       = set()
         right_entries:  set[tuple[int, int]]       = set()
         static_entries: set[tuple[str, int, int]]  = set()
+        entry_labels:   dict[tuple[int, int], str] = {}
 
         for mi in range(m_rows_total):
             for mj in range(m_cols_total):
@@ -1554,6 +1602,8 @@ class CrossoutGridApp:
                     right_entries.add((row_off + r, col_off + c))
                 for side, r, c in mod["static_entries"]:
                     static_entries.add((side, row_off + r, col_off + c))
+                for (r, c), lbl in mod.get("entry_labels", {}).items():
+                    entry_labels[(row_off + r, col_off + c)] = lbl
 
         # At every internal column boundary, 'o' cells on either facing side would
         # stop traces before they cross into the adjacent module.  Replace them with
@@ -1622,6 +1672,7 @@ class CrossoutGridApp:
             "right_entries":  right_entries,
             "static_entries": static_entries,
             "bridge_entries": bridge_entries,
+            "entry_labels":   entry_labels,
         }
 
     def _load_composed_layout(self, parsed: dict, label: str) -> None:
@@ -1642,6 +1693,7 @@ class CrossoutGridApp:
         self.crossed_cells.clear()
         self.active_inputs.clear()
         self.bridge_entries = parsed.get("bridge_entries", set())
+        self.entry_labels   = parsed.get("entry_labels", {})
         self._bridge_cell_positions = self._build_bridge_positions()
         self.layout_label_var.set(f"Layout: {label}")
         self.info_var.set(self.layout_label_var.get())
@@ -1678,10 +1730,10 @@ class CrossoutGridApp:
                 continue
 
             if "\t" in line:
-                tokens = [token.strip().lower() for token in line.split("\t")]
+                tokens = [token.strip() for token in line.split("\t")]
             else:
                 # Space-only fallback: split on runs of spaces.
-                tokens = [token.strip().lower() for token in re.split(r" +", line.strip())]
+                tokens = [token.strip() for token in re.split(r" +", line.strip())]
 
             rows.append(tokens)
 
@@ -1694,7 +1746,7 @@ class CrossoutGridApp:
         if not width:
             raise ValueError(f"Layout file {path.name} does not contain an interior grid.")
 
-        cells = [[tok if tok in {"x", "y", "v", "o", "+", "\\", "+\\", "l", "r"} else "" for tok in row] for row in padded_rows]
+        cells = [[tok if (tok in {"x", "y", "v", "o", "+", "\\", "+\\"} or (tok and tok[0] in ("l", "r", "o"))) else "" for tok in row] for row in padded_rows]
 
         top_entries: set[tuple[int, int]] = set()
         bottom_entries: set[tuple[int, int]] = set()
@@ -1706,26 +1758,32 @@ class CrossoutGridApp:
         # the side where the l/r cell sits.
         n_rows = len(cells)
         n_cols = len(cells[0]) if cells else 0
+        entry_labels: dict[tuple[int, int], str] = {}
         for r in range(n_rows):
             for c in range(n_cols):
-                if cells[r][c] != "o":
+                if cells[r][c][0:1] != "o":
                     continue
                 below = cells[r + 1][c] if r + 1 < n_rows else ""
                 above = cells[r - 1][c] if r > 0 else ""
                 right = cells[r][c + 1] if c + 1 < n_cols else ""
                 left  = cells[r][c - 1] if c > 0 else ""
-                if below in ("l", "r"):
+                lbl = cells[r][c][1:]
+                if below and below[0] in ("l", "r"):
                     cells[r][c] = ""
                     bottom_entries.add((r, c))   # signal goes UP (away from logic cell below)
-                elif above in ("l", "r"):
+                    if lbl: entry_labels[(r, c)] = lbl
+                elif above and above[0] in ("l", "r"):
                     cells[r][c] = ""
                     top_entries.add((r, c))      # signal goes DOWN (away from logic cell above)
-                elif right in ("l", "r"):
+                    if lbl: entry_labels[(r, c)] = lbl
+                elif right and right[0] in ("l", "r"):
                     cells[r][c] = ""
                     right_entries.add((r, c))    # signal goes LEFT (away from logic cell right)
-                elif left in ("l", "r"):
+                    if lbl: entry_labels[(r, c)] = lbl
+                elif left and left[0] in ("l", "r"):
                     cells[r][c] = ""
                     left_entries.add((r, c))     # signal goes RIGHT (away from logic cell left)
+                    if lbl: entry_labels[(r, c)] = lbl
 
         static_entries: set[tuple[str, int, int]] = set()
 
@@ -1736,13 +1794,13 @@ class CrossoutGridApp:
                     continue
                 if c == 0:
                     adj = row_tokens[c + 1] if c + 1 < width else ""
-                    if adj in ("l", "r"):
+                    if adj and adj[0] in ("l", "r"):
                         static_entries.add(("left", r, 0))
                     else:
                         left_entries.add((r, 0))
                 elif c == width - 1:
                     adj = row_tokens[c - 1]
-                    if adj in ("l", "r"):
+                    if adj and adj[0] in ("l", "r"):
                         static_entries.add(("right", r, width - 1))
                     else:
                         right_entries.add((r, width - 1))
@@ -1750,12 +1808,12 @@ class CrossoutGridApp:
                     right_tok = row_tokens[c + 1]
                     left_tok = row_tokens[c - 1]
                     if right_tok not in ("", "-", "|"):
-                        if right_tok in ("l", "r"):
+                        if right_tok and right_tok[0] in ("l", "r"):
                             static_entries.add(("left", r, c))
                         else:
                             left_entries.add((r, c))
                     elif left_tok not in ("", "-", "|"):
-                        if left_tok in ("l", "r"):
+                        if left_tok and left_tok[0] in ("l", "r"):
                             static_entries.add(("right", r, c))
                         else:
                             right_entries.add((r, c))
@@ -1768,13 +1826,13 @@ class CrossoutGridApp:
                     continue
                 if r == 0:
                     adj = padded_rows[r + 1][c] if r + 1 < n_padded else ""
-                    if adj in ("l", "r"):
+                    if adj and adj[0] in ("l", "r"):
                         static_entries.add(("top", 0, c))
                     else:
                         top_entries.add((0, c))
                 elif r == n_padded - 1:
                     adj = padded_rows[r - 1][c]
-                    if adj in ("l", "r"):
+                    if adj and adj[0] in ("l", "r"):
                         static_entries.add(("bottom", r, c))
                     else:
                         bottom_entries.add((r, c))
@@ -1782,23 +1840,24 @@ class CrossoutGridApp:
                     below_tok = padded_rows[r + 1][c]
                     above_tok = padded_rows[r - 1][c]
                     if below_tok not in ("", "-", "|"):
-                        if below_tok in ("l", "r"):
+                        if below_tok and below_tok[0] in ("l", "r"):
                             static_entries.add(("top", r, c))
                         else:
                             top_entries.add((r, c))
                     elif above_tok not in ("", "-", "|"):
-                        if above_tok in ("l", "r"):
+                        if above_tok and above_tok[0] in ("l", "r"):
                             static_entries.add(("bottom", r, c))
                         else:
                             bottom_entries.add((r, c))
 
         return {
-            "cells": cells,
-            "top_entries": top_entries,
+            "cells":          cells,
+            "top_entries":    top_entries,
             "bottom_entries": bottom_entries,
-            "left_entries": left_entries,
-            "right_entries": right_entries,
+            "left_entries":   left_entries,
+            "right_entries":  right_entries,
             "static_entries": static_entries,
+            "entry_labels":   entry_labels,
         }
 
 
