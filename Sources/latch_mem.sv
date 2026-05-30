@@ -97,6 +97,7 @@ module prog #(D, E) (
   reg [(D*8)-1:0] D_line_in;
   reg [E:0] en_line;
   reg prog_shft;
+  reg prog_apply_sel_d;
   reg [1:0] prog_reset;
   
   // Wires
@@ -108,7 +109,7 @@ module prog #(D, E) (
   assign prog_s_out = en_line[E];
 
   assign prog_apply_sel = (prog_apply && !prog_en) || prog_reset != 2'b00;
-  assign en = (prog_apply_sel) ? en_line : '0;
+  assign en = (prog_apply_sel_d) ? en_line : '0;
   assign data = D_line;
   
   genvar x;
@@ -158,6 +159,15 @@ module prog #(D, E) (
           end
           
         end
+      end
+    end
+
+    always @(negedge prog_clk or negedge prog_nres)
+    begin
+      if (prog_nres == 0) begin
+        prog_apply_sel_d <= 1'b0;
+      end else begin
+        prog_apply_sel_d <= prog_apply_sel;
       end
     end
   
