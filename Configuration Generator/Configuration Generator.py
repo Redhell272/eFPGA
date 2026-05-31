@@ -1579,7 +1579,30 @@ class CrossoutGridApp:
         composed = self._compose_efpga(n, m, modules)
         self._compose_info = {"n_cols": n, "n_rows": m, "modules": modules, "configs": configs}
         self._last_save_path = None
+
+        # Preserve the current configuration across rebuilds
+        old_crossed = set(self.crossed_cells)
+        old_active  = set(self.active_inputs)
+
         self._load_composed_layout(composed, f"eFPGA {n}\u00d7{m}")
+
+        # Restore cells/entries that are still valid in the new layout
+        if old_crossed or old_active:
+            invalid_tokens = {"", "o", "v", "+", "\\", "+\\"}
+            self.crossed_cells = {
+                (r, c) for r, c in old_crossed
+                if r < self.grid_rows and c < self.grid_cols
+                and self.layout_cells[r][c] not in invalid_tokens
+                and self.layout_cells[r][c][0:1] != "o"
+            }
+            all_new_entries = (
+                {("left",   r, c) for r, c in self.left_entries} |
+                {("right",  r, c) for r, c in self.right_entries} |
+                {("top",    r, c) for r, c in self.top_entries} |
+                {("bottom", r, c) for r, c in self.bottom_entries}
+            )
+            self.active_inputs = old_active & all_new_entries
+            self._refresh_colors()
 
     def _compose_efpga(
         self, n_cols: int, n_rows: int, modules: dict
