@@ -52,6 +52,8 @@ class CrossoutGridApp:
         self.bridge_entries: set[tuple] = set()
         self._bridge_cell_positions: set[tuple[int, int]] = set()
         self.entry_labels: dict[tuple[int, int], str] = {}
+        self.module_labels: dict[tuple[int, int], str] = {}
+        self._rendered_module_labels: dict[tuple[int, int], list[int]] = {}
         self._left_entry_rows: set[int] = set()
         self._right_entry_rows: set[int] = set()
         self._top_entry_cols: set[int] = set()
@@ -250,6 +252,7 @@ class CrossoutGridApp:
         self._rendered_bridges.clear()
         self._rendered_markers.clear()
         self._rendered_entry_labels.clear()
+        self._rendered_module_labels.clear()
         self._last_routing_key = None
         self._last_impacted_cells = set()
         self._rendered_range = (-1, -1, -1, -1)
@@ -803,8 +806,10 @@ class CrossoutGridApp:
         r0, r1, c0, c1 = self._rendered_range
         self._draw_layout_points(impacted_cells, r0, r1, c0, c1, force_redraw=redraw_routing)
         self._draw_entry_markers(force_redraw=redraw_routing)
+        self._draw_module_labels(force_redraw=redraw_routing)
         self.grid_canvas.tag_raise("cell_label")
         self.grid_canvas.tag_raise("grid_frame")
+        self.grid_canvas.tag_raise("module_label")
         self.grid_canvas.tag_raise("layout_point")
         self.grid_canvas.tag_raise("layout_entry")
 
@@ -1422,6 +1427,50 @@ class CrossoutGridApp:
                 added = True
         return added
 
+    def _draw_module_labels(self, force_redraw: bool = False) -> None:
+        """Draw a name-tag (background rect + text) at the top-left cell of each module."""
+        if self.cell_size < self._lod_cell_size or not self.module_labels:
+            return
+        r0, r1, c0, c1 = self._rendered_range
+
+        if force_redraw:
+            for ids in self._rendered_module_labels.values():
+                for id_ in ids:
+                    self.grid_canvas.delete(id_)
+            self._rendered_module_labels.clear()
+        else:
+            to_remove = [pos for pos in self._rendered_module_labels
+                         if not (r0 <= pos[0] < r1 and c0 <= pos[1] < c1)]
+            for pos in to_remove:
+                for id_ in self._rendered_module_labels.pop(pos):
+                    self.grid_canvas.delete(id_)
+
+        if self.cell_size < 10:
+            return
+
+        fsize = max(6, min(int(self.cell_size * 0.45), 12))
+        for (gr, gc), lbl in self.module_labels.items():
+            if not (r0 <= gr < r1 and c0 <= gc < c1):
+                continue
+            if (gr, gc) in self._rendered_module_labels:
+                continue
+            x0 = self._draw_x + gc * self.cell_size
+            y0 = self._draw_y + gr * self.cell_size
+            x1 = x0 + 2 * self.cell_size
+            cx = x0 + self.cell_size          # centre of the two-cell span
+            cy = y0 + self.cell_size * 0.5
+            bg = self.grid_canvas.create_rectangle(
+                x0, y0, x1, y0 + self.cell_size,
+                fill="#d0d8ff", outline="",
+                tags=("module_label",),
+            )
+            txt = self.grid_canvas.create_text(
+                cx, cy, text=lbl, fill="#2f2f2f",
+                font=("Arial", fsize),
+                tags=("module_label",),
+            )
+            self._rendered_module_labels[(gr, gc)] = [bg, txt]
+
     def _draw_entry_marker_at(
         self, entry: tuple[str, int, int], point: tuple[float, float], radius: float
     ) -> int:
@@ -1579,10 +1628,15 @@ class CrossoutGridApp:
         right_entries:  set[tuple[int, int]]       = set()
         static_entries: set[tuple[str, int, int]]  = set()
         entry_labels:   dict[tuple[int, int], str] = {}
+        module_labels:  dict[tuple[int, int], str] = {}
 
+        type_counters: dict[str, int] = {}
         for mi in range(m_rows_total):
             for mj in range(m_cols_total):
                 mtype   = module_type(mi, mj)
+                idx     = type_counters.get(mtype, 0)
+                type_counters[mtype] = idx + 1
+                module_labels[(row_offsets[mi], col_offsets[mj])] = f"{mtype}{idx}"
                 mod     = modules[mtype]
                 row_off = row_offsets[mi]
                 col_off = col_offsets[mj]
@@ -1673,6 +1727,7 @@ class CrossoutGridApp:
             "static_entries": static_entries,
             "bridge_entries": bridge_entries,
             "entry_labels":   entry_labels,
+            "module_labels":  module_labels,
         }
 
     def _load_composed_layout(self, parsed: dict, label: str) -> None:
@@ -1694,6 +1749,7 @@ class CrossoutGridApp:
         self.active_inputs.clear()
         self.bridge_entries = parsed.get("bridge_entries", set())
         self.entry_labels   = parsed.get("entry_labels", {})
+        self.module_labels  = parsed.get("module_labels", {})
         self._bridge_cell_positions = self._build_bridge_positions()
         self.layout_label_var.set(f"Layout: {label}")
         self.info_var.set(self.layout_label_var.get())
