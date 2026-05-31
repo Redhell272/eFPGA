@@ -2,7 +2,6 @@
 //Test Logic Switch
 module testbench;
 
-  reg reg_clk_en=1'b0;
   reg prog_nres=1'b0;
   reg prog_clk=1'b0;
   reg prog_start=1'b0;
@@ -23,7 +22,7 @@ module testbench;
     .prog_clk(prog_clk),
     .prog_start(prog_start),
     .reg_nres(reg_nres),
-    .reg_clk(reg_clk && reg_clk_en),
+    .reg_clk(reg_clk),
     .N_i(N_i),
     .S_o(S_o),
     .S_i(S_i),
@@ -44,14 +43,11 @@ module testbench;
     //Testbench Inputs
     #20 prog_nres=1;
     #40 prog_nres=1; // Give time for latch reset system
-    #20 reg_clk_en=1;
-    #20 reg_clk_en=0;
 
     #10 prog_start=1;
     #10 prog_start=0;
 
-    #132000 reg_clk_en=1;
-    #20 reg_nres=1;
+    #132000 reg_nres=1;
 
   end
   

@@ -40,7 +40,7 @@ module eFPGA_prog #(V, H, W) (
   reg   [1:0] data_sel;
   
   // Wires
-  logic         cnt;
+  logic         prog_run;
   logic   [1:0] state;
   logic   [5:0] data_num;
   logic   [7:0] en_num;
@@ -49,9 +49,11 @@ module eFPGA_prog #(V, H, W) (
   logic         prog_en;
   logic         prog_apply;
   logic [2*H:0] prog_s;
+
+  logic reg_clk_en;
   
   // Assigns
-  assign cnt = row_cnt != 0 || col_cnt != 0 || en_cnt != 0 || data_cnt != 0;
+  assign prog_run = row_cnt != 0 || col_cnt != 0 || en_cnt != 0 || data_cnt != 0;
 
   assign state = {row_cnt[0], col_cnt[0]};
 
@@ -75,11 +77,13 @@ module eFPGA_prog #(V, H, W) (
 
   assign addr = addr_cnt;
 
+  assign reg_clk_en = prog_run ? 1'b0 : reg_clk;
+
   // Instances
 
   fpga #(.V(V), .H(H)) eFPGA_unit (.prog_nres(prog_nres), .prog_clk(prog_clk),
     .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s(prog_s),
-    .reg_nres(reg_nres), .reg_clk(reg_clk),
+    .reg_nres(reg_nres), .reg_clk(reg_clk_en),
     .N_i(N_i), .S_o(S_o), .S_i(S_i), .N_o(N_o),
     .W_i(W_i), .E_o(E_o), .E_i(E_i), .W_o(W_o));
 
@@ -113,7 +117,7 @@ module eFPGA_prog #(V, H, W) (
         prog_s_shft <= '0;
         prog_s_strobe <= 0;
       end else begin
-        if (cnt) begin
+        if (prog_run) begin
           if (data_cnt == data_num) begin
             data_cnt <= 0;
             prog_s_strobe <= 0;
@@ -159,10 +163,10 @@ module eFPGA_prog #(V, H, W) (
         data <= '0;
         data_sel <= 0;
       end else begin
-        if (prog_start_RE[0] == 1 && !cnt) begin
+        if (prog_start_RE[0] == 1 && !prog_run) begin
             addr_cnt <= addr_cnt + 1;
             data <= dout;
-        end else if ((cnt || prog_start_RE[1]) && (prog_en == 1'b1 && prog_apply == 1'b0)) begin
+        end else if ((prog_run || prog_start_RE[1]) && (prog_en == 1'b1 && prog_apply == 1'b0)) begin
           data_sel <= data_sel + 1;
           if (data_sel == 2'b11) begin
             addr_cnt <= addr_cnt + 1;
