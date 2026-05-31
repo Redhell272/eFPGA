@@ -194,8 +194,8 @@ module H_crossbar (
   
   assign wires_E[0] = W_i;
   assign E_o = wires_E[6];
-  assign wires_W[0] = E_i;
-  assign W_o = wires_W[6];
+  assign wires_W[6] = E_i;
+  assign W_o = wires_W[0];
 
   genvar x;
   generate
@@ -204,8 +204,8 @@ module H_crossbar (
       Xnodes #(.V(10), .H(32)) X_Ni (.D(data[31:0]), .E(en[16*x+15:16*x+6]), .V_i(Ni[x]), .V_o(XNi[x]), .H_i(wires_E[2*x+1]), .H_o(wires_E[2*x+2]));
       Ynodes_H #(.V(6))        Y_N  (.D(data[32]), .E(en[16*x+5:16*x+0]), .H_i(XSi[x]), .H_o(XNo[x]));
       Ynodes_H #(.V(10))       Y_S  (.D(data[32]), .E(en[16*x+15:16*x+6]), .H_i(XNi[x]), .H_o(XSo[x]));
-      Xnodes #(.V(6),  .H(16)) X_Si (.D(data[48:33]), .E(en[16*x+5:16*x+0]), .V_i(Si[x]), .V_o(XSi[x]), .H_i(wires_W[2*x+1]), .H_o(wires_W[2*x+2]));
-      Xnodes #(.V(10), .H(16)) X_So (.D(data[48:33]), .E(en[16*x+15:16*x+6]), .V_i(XSo[x]),  .V_o(So[x]),  .H_i(wires_W[2*x]),  .H_o(wires_W[2*x+1]));
+      Xnodes #(.V(6),  .H(16)) X_Si (.D(data[48:33]), .E(en[16*x+5:16*x+0]), .V_i(Si[x]), .V_o(XSi[x]), .H_i(wires_W[2*x+1]), .H_o(wires_W[2*x+0]));
+      Xnodes #(.V(10), .H(16)) X_So (.D(data[48:33]), .E(en[16*x+15:16*x+6]), .V_i(XSo[x]),  .V_o(So[x]),  .H_i(wires_W[2*x+2]),  .H_o(wires_W[2*x+1]));
     end
   endgenerate
   

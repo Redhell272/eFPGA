@@ -2,7 +2,7 @@
 //Test Logic Switch
 module testbench;
 
-  reg reg_clk_en=1'b1;
+  reg reg_clk_en=1'b0;
   reg prog_nres=1'b0;
   reg prog_clk=1'b0;
   reg prog_start=1'b0;
@@ -12,7 +12,7 @@ module testbench;
   wire [62*3+31:0] S_o;
   reg  [34*3+15:0] S_i=118'h000000000000000000000000000000;
   wire [34*3+15:0] N_o;
-  reg  [40*2+31:0] W_i=112'h000000000000000000000000000F;
+  reg  [40*2+31:0] W_i=112'h0000000000000000000000000001;
   wire [56*2+31:0] E_o;
   reg  [16*2+15:0] E_i=48'h000000000000;
   wire [16*2+15:0] W_o;
@@ -42,9 +42,10 @@ module testbench;
     $dumpvars();
     
     //Testbench Inputs
-    #20 reg_clk_en=0;
     #20 prog_nres=1;
-    #40 prog_nres=1;
+    #40 prog_nres=1; // Give time for latch reset system
+    #20 reg_clk_en=1;
+    #20 reg_clk_en=0;
 
     #10 prog_start=1;
     #10 prog_start=0;
