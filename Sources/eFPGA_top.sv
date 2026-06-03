@@ -2,8 +2,8 @@
 
 // eFPGA Wrapper Top Module
 module eFPGA #(
-  parameter int V = 3,
-  parameter int H = 2,
+  parameter int V = 2,
+  parameter int H = 1,
   parameter int W = 12
 ) (
   //Programming Interface

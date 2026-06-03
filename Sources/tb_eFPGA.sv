@@ -7,14 +7,14 @@ module testbench;
   reg prog_start=1'b0;
   reg reg_nres=1'b0;
   reg reg_clk=1'b0;
-  reg  [62*3+31:0] N_i=218'h0000000000000000000000000000000000000000000000000000000;
-  wire [62*3+31:0] S_o;
-  reg  [34*3+15:0] S_i=118'h000000000000000000000000000000;
-  wire [34*3+15:0] N_o;
-  reg  [40*2+31:0] W_i=112'h0000000000000000000000000001;
-  wire [56*2+31:0] E_o;
-  reg  [16*2+15:0] E_i=48'h000000000000;
-  wire [16*2+15:0] W_o;
+  reg  [62*2+31:0] N_i=156'h000000000000000000000000000000000000000;
+  wire [62*2+31:0] S_o;
+  reg  [34*2+15:0] S_i=84'h000000000000000000000;
+  wire [34*2+15:0] N_o;
+  reg  [40*1+31:0] W_i=72'h000000000000000001;
+  wire [56*1+31:0] E_o;
+  reg  [16*1+15:0] E_i=32'h00000000;
+  wire [16*1+15:0] W_o;
   
   // Instantiate Units Under Test
   eFPGA UUT (
@@ -47,7 +47,7 @@ module testbench;
     #10 prog_start=1;
     #10 prog_start=0;
 
-    #132000 reg_nres=1;
+    #58000 reg_nres=1;
 
   end
   
@@ -60,6 +60,6 @@ module testbench;
   
   //Simulation Runtime
   initial
-    #160000 $finish;
+    #656000 $finish;
   
 endmodule
