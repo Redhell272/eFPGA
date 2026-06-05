@@ -8,5 +8,6 @@ synth_design \
     -part xc7a100tcsg324-1
 
 # Write the checkpoint
+catch {exec attrib -r checkpoints}
 write_checkpoint -force checkpoints/logic_slice.dcp
 close_design
