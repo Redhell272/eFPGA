@@ -16,6 +16,8 @@ create_generated_clock -name clk_div15 -source [get_ports clock] -divide_by 6553
 set_false_path -from [get_pins -hier -filter {NAME =~ *REG0*}]
 set_false_path -to [get_pins -hier -filter {NAME =~ *REG0*}]
 
+set_property ALLOW_COMBINATORIAL_LOOPS TRUE [get_nets -hierarchical *]
+
 ##Switches
 
 set_property -dict { PACKAGE_PIN J15   IOSTANDARD LVCMOS33 } [get_ports { sw[0] }]; #IO_L24N_T3_RS0_15 Sch=sw[0]
