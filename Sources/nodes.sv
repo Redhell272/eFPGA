@@ -40,6 +40,37 @@ module Xnodes #(V, H) (
   
 endmodule
 
+// Xnodes but up
+module XnodesU #(V, H) (
+  //Programming Input
+  input wire [H-1:0] D,
+  input wire [V-1:0] E,
+  //Data Wires
+  input wire [V-1:0] V_i,
+  output wire [V-1:0] V_o,
+  input wire [H-1:0] H_i,
+  output wire [H-1:0] H_o
+);
+  
+  logic [H-1:0] D_F;
+  logic [H-1:0] H_iF;
+  logic [H-1:0] H_oF;
+  
+  // Flip wires to keep all connections grid aligned
+  genvar x;
+  generate
+    for(x = 0; x < H; x++) begin
+      assign D_F[x] = D[H-1-x];
+      assign H_iF[x] = H_i[H-1-x];
+      assign H_o[x] = H_oF[H-1-x];
+    end
+  endgenerate
+
+  // Instances
+  Xnodes #(.V(V), .H(H)) X0 (.D(D_F), .E(E), .V_i(V_i), .V_o(V_o), .H_i(H_iF), .H_o(H_oF));
+  
+endmodule
+
 
 // Horizontal array of Y nodes
 module Ynodes_H #(V) (

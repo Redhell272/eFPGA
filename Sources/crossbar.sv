@@ -47,16 +47,16 @@ module crossbar (
 
   // Instances
   
-  Xnodes #(.V(16), .H(32)) X_NW (.D(data[31:0]), .E(en[15:0]), .V_i(Y_N[1]), .V_o(N_o), .H_i(W_i), .H_o(Y_E[0]));
-  Ynodes_V #(.H(32))       Y_E0 (.D(data[31:0]), .E(en[16]), .V_i(Y_E[0]), .V_o(Y_E[1]));
-  Xnodes #(.V(32), .H(32)) X_NE (.D(data[31:0]), .E(en[48:17]), .V_i(N_i), .V_o(Y_S[0]), .H_i(Y_E[1]), .H_o(E_o));
+  XnodesU  #(.V(16), .H(32)) X_NW (.D(data[31:0]), .E(en[15:0]), .V_i(Y_N[1]), .V_o(N_o), .H_i(W_i), .H_o(Y_E[0]));
+  Ynodes_V #(.H(32))         Y_E0 (.D(data[31:0]), .E(en[16]), .V_i(Y_E[0]), .V_o(Y_E[1]));
+  XnodesU  #(.V(32), .H(32)) X_NE (.D(data[31:0]), .E(en[48:17]), .V_i(N_i), .V_o(Y_S[0]), .H_i(Y_E[1]), .H_o(E_o));
 
-  Ynodes_H #(.V(16))       Y_N0 (.D(data[32]), .E(en[15:0]), .H_i(Y_N[0]), .H_o(Y_N[1]));
-  Ynodes_H #(.V(32))       Y_S0 (.D(data[32]), .E(en[48:17]), .H_i(Y_S[0]), .H_o(Y_S[1]));
+  Ynodes_H #(.V(16))         Y_N0 (.D(data[32]), .E(en[15:0]), .H_i(Y_N[0]), .H_o(Y_N[1]));
+  Ynodes_H #(.V(32))         Y_S0 (.D(data[32]), .E(en[48:17]), .H_i(Y_S[0]), .H_o(Y_S[1]));
 
-  Xnodes #(.V(16), .H(16)) X_SW (.D(data[48:33]), .E(en[15:0]), .V_i(S_i), .V_o(Y_N[0]), .H_i(Y_W[1]), .H_o(W_o));
-  Ynodes_V #(.H(16))       Y_W0 (.D(data[48:33]), .E(en[16]), .V_i(Y_W[0]), .V_o(Y_W[1]));
-  Xnodes #(.V(32), .H(16)) X_SE (.D(data[48:33]), .E(en[48:17]), .V_i(Y_S[1]), .V_o(S_o), .H_i(E_i), .H_o(Y_W[0]));
+  Xnodes   #(.V(16), .H(16)) X_SW (.D(data[48:33]), .E(en[15:0]), .V_i(S_i), .V_o(Y_N[0]), .H_i(Y_W[1]), .H_o(W_o));
+  Ynodes_V #(.H(16))         Y_W0 (.D(data[48:33]), .E(en[16]), .V_i(Y_W[0]), .V_o(Y_W[1]));
+  Xnodes   #(.V(32), .H(16)) X_SE (.D(data[48:33]), .E(en[48:17]), .V_i(Y_S[1]), .V_o(S_o), .H_i(E_i), .H_o(Y_W[0]));
 
 endmodule
 
@@ -119,11 +119,11 @@ module V_crossbar (
   genvar x;
   generate
     for(x = 0; x < 4; x++)begin
-      Xnodes #(.V(16), .H(2)) X_LO_N (.D(data[8*x+1:8*x+0]), .E(en[23:8]),  .V_i(LO_N[2*x+1]), .V_o(LO_N[2*x]), .H_i(W_i[2*x+1:2*x]), .H_o(LD_B[x]));
-      Xnodes #(.V(32), .H(2)) X_LO_S (.D(data[8*x+1:8*x+0]), .E(en[55:24]), .V_i(LO_S[2*x]),   .V_o(LO_S[2*x+1]), .H_i(LD_B[x]), .H_o());
-      Xnodes #(.V(8),  .H(6)) X_LO_D (.D(data[8*x+7:8*x+2]), .E(en[7:0]),   .V_i(W_i), .V_o(), .H_i('0), .H_o(LO_D[x]));
-      Xnodes #(.V(16), .H(6)) X_LI_N (.D(data[8*x+7:8*x+2]), .E(en[23:8]),  .V_i(LO_N[2*x+2]), .V_o(LO_N[2*x+1]), .H_i(LO_D[x]), .H_o(LO_B[x]));
-      Xnodes #(.V(32), .H(6)) X_LI_S (.D(data[8*x+7:8*x+2]), .E(en[55:24]), .V_i(LO_S[2*x+1]), .V_o(LO_S[2*x+2]), .H_i(LO_B[x]), .H_o(E_o[6*x+5:6*x]));
+      XnodesU #(.V(16), .H(2)) X_LO_N (.D(data[8*x+1:8*x+0]), .E(en[23:8]),  .V_i(LO_N[2*x+1]), .V_o(LO_N[2*x]), .H_i(W_i[2*x+1:2*x]), .H_o(LD_B[x]));
+      Xnodes  #(.V(32), .H(2)) X_LO_S (.D(data[8*x+1:8*x+0]), .E(en[55:24]), .V_i(LO_S[2*x]),   .V_o(LO_S[2*x+1]), .H_i(LD_B[x]), .H_o());
+      Xnodes  #(.V(8),  .H(6)) X_LO_D (.D(data[8*x+7:8*x+2]), .E(en[7:0]),   .V_i(W_i), .V_o(), .H_i('0), .H_o(LO_D[x]));
+      XnodesU #(.V(16), .H(6)) X_LI_N (.D(data[8*x+7:8*x+2]), .E(en[23:8]),  .V_i(LO_N[2*x+2]), .V_o(LO_N[2*x+1]), .H_i(LO_D[x]), .H_o(LO_B[x]));
+      Xnodes  #(.V(32), .H(6)) X_LI_S (.D(data[8*x+7:8*x+2]), .E(en[55:24]), .V_i(LO_S[2*x+1]), .V_o(LO_S[2*x+2]), .H_i(LO_B[x]), .H_o(E_o[6*x+5:6*x]));
     end
   endgenerate
 
@@ -200,12 +200,12 @@ module H_crossbar (
   genvar x;
   generate
     for(x = 0; x < 3; x++)begin
-      Xnodes #(.V(6),  .H(32)) X_No (.D(data[31:0]), .E(en[16*x+5:16*x+0]), .V_i(XNo[x]), .V_o(No[x]), .H_i(wires_E[2*x+0]), .H_o(wires_E[2*x+1]));
-      Xnodes #(.V(10), .H(32)) X_Ni (.D(data[31:0]), .E(en[16*x+15:16*x+6]), .V_i(Ni[x]), .V_o(XNi[x]), .H_i(wires_E[2*x+1]), .H_o(wires_E[2*x+2]));
-      Ynodes_H #(.V(6))        Y_N  (.D(data[32]), .E(en[16*x+5:16*x+0]), .H_i(XSi[x]), .H_o(XNo[x]));
-      Ynodes_H #(.V(10))       Y_S  (.D(data[32]), .E(en[16*x+15:16*x+6]), .H_i(XNi[x]), .H_o(XSo[x]));
-      Xnodes #(.V(6),  .H(16)) X_Si (.D(data[48:33]), .E(en[16*x+5:16*x+0]), .V_i(Si[x]), .V_o(XSi[x]), .H_i(wires_W[2*x+1]), .H_o(wires_W[2*x+0]));
-      Xnodes #(.V(10), .H(16)) X_So (.D(data[48:33]), .E(en[16*x+15:16*x+6]), .V_i(XSo[x]),  .V_o(So[x]),  .H_i(wires_W[2*x+2]),  .H_o(wires_W[2*x+1]));
+      XnodesU  #(.V(6),  .H(32))  X_No (.D(data[31:0]), .E(en[16*x+5:16*x+0]), .V_i(XNo[x]), .V_o(No[x]), .H_i(wires_E[2*x+0]), .H_o(wires_E[2*x+1]));
+      XnodesU  #(.V(10), .H(32))  X_Ni (.D(data[31:0]), .E(en[16*x+15:16*x+6]), .V_i(Ni[x]), .V_o(XNi[x]), .H_i(wires_E[2*x+1]), .H_o(wires_E[2*x+2]));
+      Ynodes_H #(.V(6))           Y_N  (.D(data[32]),   .E(en[16*x+5:16*x+0]), .H_i(XSi[x]), .H_o(XNo[x]));
+      Ynodes_H #(.V(10))          Y_S  (.D(data[32]),   .E(en[16*x+15:16*x+6]), .H_i(XNi[x]), .H_o(XSo[x]));
+      Xnodes   #(.V(6),  .H(16))  X_Si (.D(data[48:33]), .E(en[16*x+5:16*x+0]), .V_i(Si[x]), .V_o(XSi[x]), .H_i(wires_W[2*x+1]), .H_o(wires_W[2*x+0]));
+      Xnodes   #(.V(10), .H(16))  X_So (.D(data[48:33]), .E(en[16*x+15:16*x+6]), .V_i(XSo[x]),  .V_o(So[x]),  .H_i(wires_W[2*x+2]),  .H_o(wires_W[2*x+1]));
     end
   endgenerate
   

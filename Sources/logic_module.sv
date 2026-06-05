@@ -146,31 +146,20 @@ module logic_switch (
 );
   
   // Wires
-  logic [5:0] D_F;
-  logic [5:0] X_W[4:0];
+  logic [5:0] X_W[2:0];
   logic [5:0] Y_N[1:0];
   logic [9:0] Y_S[1:0];
-  
-  // Flip wires around X_U0 block to keep all connections grid aligned
-  genvar x;
-  generate
-    for(x = 0; x < 6; x++) begin
-      assign D_F[x] = D[8-x];
-      assign X_W[2][x] = X_W[1][5-x];
-      assign X_W[4][x] = X_W[3][5-x];
-    end
-  endgenerate
 
   // Instances
   endpoints #(.L(6))       EP0 (.O(X_W[0]));
-  Xnodes #(.V(2), .H(6))  X_L0 (.D(D[8:3]), .E(E[1:0]),       .V_i(data_out), .V_o(),  .H_i(X_W[0]), .H_o(X_W[1]));
+  Xnodes #(.V(2), .H(6))  X_L0 (.D(D[8:3]), .E(E[1:0]),    .V_i(data_out), .V_o(),  .H_i(X_W[0]), .H_o(X_W[1]));
 
-  Xnodes #(.V(6), .H(2))  X_U0 (.D({D[0], D[1]}), .E(E[7:2]), .V_i(Y_N[1]), .V_o(up_out), .H_i({data_out[0], data_out[1]}), .H_o());
-  Ynodes_H #(.V(6))       Y_U0 (.D(D[2]), .E(E[7:2]),         .H_i(Y_N[0]), .H_o(Y_N[1]));
-  Xnodes #(.V(6), .H(6))  X_U1 (.D(D_F), .E(E[7:2]),          .V_i(up_in), .V_o(Y_N[0]), .H_i(X_W[2]), .H_o(X_W[3]));
+  XnodesU #(.V(6), .H(2))  X_U0 (.D(D[1:0]), .E(E[7:2]),   .V_i(Y_N[1]), .V_o(up_out), .H_i(data_out), .H_o());
+  Ynodes_H #(.V(6))       Y_U0 (.D(D[2]), .E(E[7:2]),      .H_i(Y_N[0]), .H_o(Y_N[1]));
+  XnodesU #(.V(6), .H(6))  X_U1 (.D(D[8:3]), .E(E[7:2]),   .V_i(up_in), .V_o(Y_N[0]), .H_i(X_W[1]), .H_o(X_W[2]));
 
-  Xnodes #(.V(10), .H(6)) X_D1 (.D(D[8:3]), .E(E[17:8]),      .V_i(down_in), .V_o(Y_S[0]), .H_i(X_W[4]), .H_o(data_in));
-  Ynodes_H #(.V(10))      Y_D0 (.D(D[9]), .E(E[17:8]),        .H_i(Y_S[0]), .H_o(Y_S[1]));
-  Xnodes #(.V(10), .H(2)) X_D0 (.D(D[11:10]), .E(E[17:8]),    .V_i(Y_S[1]), .V_o(down_out), .H_i(data_out), .H_o());
+  Xnodes #(.V(10), .H(6)) X_D1 (.D(D[8:3]), .E(E[17:8]),   .V_i(down_in), .V_o(Y_S[0]), .H_i(X_W[2]), .H_o(data_in));
+  Ynodes_H #(.V(10))      Y_D0 (.D(D[9]), .E(E[17:8]),     .H_i(Y_S[0]), .H_o(Y_S[1]));
+  Xnodes #(.V(10), .H(2)) X_D0 (.D(D[11:10]), .E(E[17:8]), .V_i(Y_S[1]), .V_o(down_out), .H_i(data_out), .H_o());
   
 endmodule
