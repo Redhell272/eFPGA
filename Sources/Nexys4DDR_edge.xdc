@@ -10,8 +10,11 @@ set_property CONFIG_VOLTAGE 3.3 [current_design]
 ## Clock signal
 set_property -dict {PACKAGE_PIN E3 IOSTANDARD LVCMOS33} [get_ports clock]
 create_clock -period 10.000 -name sys_clk_pin -waveform {0.000 5.000} -add [get_ports clock]
-#set_false_path -from [get_pins -hier -filter {NAME =~ *Reg*}]
-#set_false_path -to [get_pins -hier -filter {NAME =~ *Reg*}]
+
+create_generated_clock -name clk_div15 -source [get_ports clock] -divide_by 65536 [get_pins -hier -filter {NAME =~ *clk_div_reg[15]/Q}]
+
+set_false_path -from [get_pins -hier -filter {NAME =~ *REG0*}]
+set_false_path -to [get_pins -hier -filter {NAME =~ *REG0*}]
 
 ##Switches
 

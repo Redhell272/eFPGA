@@ -10,6 +10,9 @@ module eFPGA_wrapper (
 );
   
   // Wires
+  reg [15:0] clk_div;
+  logic clk;
+
   logic prog_nres;
   logic prog_clk;
   logic prog_start;
@@ -27,12 +30,14 @@ module eFPGA_wrapper (
   logic [16*1+15:0] W_o;
   
   // Assigns
+  assign clk = clk_div[15];
+
   assign prog_nres = ~reset;
-  assign prog_clk = clock;
+  assign prog_clk = clk;
   assign prog_start = prog_btn;
 
   assign reg_nres = ~reset;
-  assign reg_clk = clock;
+  assign reg_clk = clk;
 
   assign N_i = '0;
   assign S_i = '0;
@@ -45,5 +50,15 @@ module eFPGA_wrapper (
   eFPGA eFPGA0 (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_start(prog_start),
     .reg_nres(reg_nres), .reg_clk(reg_clk),
     .N_i(N_i), .S_o(S_o), .S_i(S_i), .N_o(N_o), .W_i(W_i), .E_o(E_o), .E_i(E_i), .W_o(W_o));
+
+  // Clock Divider
+  always @(posedge clock or posedge reset)
+    begin
+      if (reset == 1) begin
+        clk_div <= '0;
+      end else begin
+        clk_div <= clk_div + 1;
+      end
+    end
   
 endmodule
