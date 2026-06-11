@@ -5,13 +5,13 @@ module eFPGA_wrapper (
   input wire         reset,
   input wire         clock,
   input wire         prog_btn,
+  input wire         reg_reset,
   input wire  [15:0] sw,
   output wire [15:0] led
 );
   
   // Wires
   reg [15:0] clk_div;
-  logic clk;
 
   logic prog_nres;
   logic prog_clk;
@@ -30,14 +30,13 @@ module eFPGA_wrapper (
   logic [16*1+15:0] W_o;
   
   // Assigns
-  assign clk = clk_div[15];
 
   assign prog_nres = ~reset;
-  assign prog_clk = clk;
+  assign prog_clk = clock;
   assign prog_start = prog_btn;
 
-  assign reg_nres = ~reset;
-  assign reg_clk = clk;
+  assign reg_nres = ~(reg_reset || reset);
+  assign reg_clk = clk_div[15];
 
   assign N_i = '0;
   assign S_i = '0;
