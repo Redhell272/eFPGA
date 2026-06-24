@@ -100,7 +100,7 @@ module crossbar_line #(V) (
   genvar x;
   generate
     for(x = 0; x < V; x++)begin
-      H_crossbar HCB (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*x]), .prog_s_out(prog_s[2*x+1]),
+      H_crossbar CBH (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*x]), .prog_s_out(prog_s[2*x+1]),
         .N_i(N_i[x*62+61:x*62+32]), .S_o(S_o[x*62+61:x*62+32]), .S_i(S_i[x*34+33:x*34+16]), .N_o(N_o[x*34+33:x*34+16]),
         .W_i(wires_W[2*x]), .E_o(wires_W[2*x+1]), .E_i(wires_E[2*x+1]), .W_o(wires_E[2*x]));
       crossbar CB (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*x+1]), .prog_s_out(prog_s[2*x+2]),
@@ -157,7 +157,7 @@ module logic_line #(V) (
         .reg_nres(reg_nres), .reg_clk(reg_clk),
         .N_i(N_i[x*62+61:x*62+32]), .S_o(S_o[x*62+61:x*62+32]), .S_i(S_i[x*34+33:x*34+16]), .N_o(N_o[x*34+33:x*34+16]),
         .W_i(wires_LI[x]), .E_o(wires_LO[x]));
-      V_crossbar VCB (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*x+1]), .prog_s_out(prog_s[2*x+2]),
+      V_crossbar CBV (.prog_nres(prog_nres), .prog_clk(prog_clk), .prog_D(prog_D), .prog_en(prog_en), .prog_apply(prog_apply), .prog_s_in(prog_s[2*x+1]), .prog_s_out(prog_s[2*x+2]),
         .N_i(N_i[x*62+93:x*62+62]), .S_o(S_o[x*62+93:x*62+62]), .S_i(S_i[x*34+49:x*34+34]), .N_o(N_o[x*34+49:x*34+34]),
         .W_i(wires_LO[x]), .E_o(wires_LI[x+1]));
     end
