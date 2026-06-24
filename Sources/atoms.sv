@@ -1,5 +1,25 @@
 `timescale 1ns/1ps
 
+//Latch
+module latch (
+  input wire D,
+  input wire E,
+  output wire O
+);
+
+  reg i;
+  assign O = i;
+
+  always @(E, D)
+    begin
+      if (E == 1) 
+        i <= D;
+    end
+
+endmodule
+
+
+
 //Register
 module register (
   input wire clk,
@@ -19,26 +39,6 @@ module register (
         Reg <= D;
     end
   
-endmodule
-
-
-
-//Latch
-module latch (
-  input wire D,
-  input wire E,
-  output wire O
-);
-
-  reg i;
-  assign O = i;
-
-  always @(E, D)
-    begin
-      if (E == 1) 
-        i <= D;
-    end
-
 endmodule
 
 
